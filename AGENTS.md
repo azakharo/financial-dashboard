@@ -15,13 +15,14 @@ React 19, TypeScript, Vite, Tailwind CSS, shadcn/ui (radix-nova style).
 
 ## Архитектура
 
-- Path alias: `@/*` → `src/*`
-- shadcn/ui компоненты: `src/components/ui/`
+- Path alias: `@/*` → `src/*` (configured in tsconfig + vite)
 - Вход: `src/main.tsx` → `src/App.tsx`
 
 ## React Compiler
 
 Включён babel-plugin-react-compiler. Не нужно использовать `useMemo`/`useCallback` вручную — компилятор оптимизирует автоматически.
+
+ESLint плагин `react-compiler` включён и показывает warnings при нарушениях правил компилятора.
 
 ## shadcn/ui
 
