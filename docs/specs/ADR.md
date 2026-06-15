@@ -21,7 +21,8 @@
 | Виртуализация таблицы          | @tanstack/react-virtual | Гибкий headless подход, совместимость с Tanstack Query                     |
 | Графики                        | Recharts                | Указано пользователем. Поддержка анимации через `isAnimationActive`        |
 | Работа с датами                | date-fns                | Указано в react_rules.md                                                   |
-| WebSocket                      | Нативный WebSocket API  | Простота, без сторонних библиотек                                          |
+| WebSocket                      | react-use-websocket     | React hook API, авто-реконнект, share-режим, message queue                 |
+| Throttle/batch обновлений      | lodash                  | Проверенная реализация, tree-shaking                                      |
 
 ---
 
@@ -111,16 +112,39 @@ WebSocket (50ms) → Buffer → Throttle (100-150ms) → queryClient.setQueryDat
 
 ### 4.2 Управление соединением
 
-```typescript
-class WebSocketManager {
-  private ws: WebSocket | null;
-  private buffer: Map<string, WSPriceUpdate>;
-  private flushInterval: number;
+**react-use-websocket hook:**
 
-  connect(url: string): void;
-  disconnect(): void;
-  subscribe(callback: (update: WSPriceUpdate) => void): () => void;
-}
+```typescript
+const { lastMessage, readyState, sendJsonMessage } = useWebSocket(WS_URL, {
+  share: true,
+  shouldReconnect: () => true,
+  reconnectInterval: 3000,
+  reconnectAttempts: 10,
+  onOpen: () => console.log('Connected'),
+  onClose: () => console.log('Disconnected'),
+});
+
+const isReady = readyState === ReadyState.OPEN;
+```
+
+**Throttle + Buffer паттерн:**
+
+```typescript
+const buffer = useRef<Map<string, WSPriceUpdate>>(new Map());
+
+const throttledFlush = throttle(() => {
+  const updates = Array.from(buffer.current.values());
+  buffer.current.clear();
+  queryClient.setQueryData(['stocks'], (old: Stock[]) => 
+    applyUpdates(old, updates)
+  );
+}, 100);
+
+const handleMessage = (message: MessageEvent) => {
+  const update = JSON.parse(message.data);
+  buffer.current.set(update.ticker, update);
+  throttledFlush();
+};
 ```
 
 ---
