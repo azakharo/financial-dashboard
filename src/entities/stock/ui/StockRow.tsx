@@ -47,8 +47,8 @@ export const StockRow: React.FC<StockRowProps> = memo(function StockRow({
       style={style}
       onClick={() => onSelect(stock.ticker)}
     >
-      <div className="w-24 font-mono font-semibold">{stock.ticker}</div>
-      <div className="flex-1 truncate">{stock.name}</div>
+      <div className="min-w-12 font-mono font-semibold">{stock.ticker}</div>
+      <div className="min-w-32 whitespace-nowrap">{stock.name}</div>
       <div className="w-32 text-right font-mono">
         {formatPrice(stock.currentPrice)}
       </div>
