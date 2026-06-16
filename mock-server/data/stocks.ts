@@ -27,14 +27,11 @@ function generateTicker(index: number): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   const ticker = []
   let i = index
-  do {
+  for (let pos = 0; pos < 4; pos++) {
     ticker.unshift(chars[i % 26])
     i = Math.floor(i / 26)
-  } while (i > 0)
-  while (ticker.length < 3) {
-    ticker.push(chars[Math.floor(Math.random() * 26)])
   }
-  return ticker.slice(0, 4).join('')
+  return ticker.join('')
 }
 
 function generateCompanyName(ticker: string, index: number): string {
