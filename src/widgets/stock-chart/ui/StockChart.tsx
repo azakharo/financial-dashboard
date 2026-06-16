@@ -15,6 +15,7 @@ import {ru} from 'date-fns/locale';
 import {useStockHistory} from '@/entities/price-history';
 import {useUIStore} from '@/shared/store';
 import type {Timeframe, PricePoint} from '@/shared/api';
+import {useChartUpdates} from '../hooks/useChartUpdates';
 
 const TIMEFRAMES: Timeframe[] = ['1D', '1W', '1M', '1Y'];
 
@@ -66,22 +67,17 @@ interface StockChartHeaderProps {
   ticker: string | null;
   timeframe: Timeframe;
   onTimeframeChange: (timeframe: Timeframe) => void;
+  latestPrice: number | undefined;
+  priceChange: number;
 }
 
 function StockChartHeader({
   ticker,
   timeframe,
   onTimeframeChange,
+  latestPrice,
+  priceChange,
 }: StockChartHeaderProps) {
-  const {data} = useStockHistory(ticker, timeframe);
-
-  const latestPrice = data?.[data.length - 1]?.price;
-  const previousPrice = data?.[data.length - 2]?.price;
-  const priceChange =
-    latestPrice && previousPrice
-      ? ((latestPrice - previousPrice) / previousPrice) * 100
-      : 0;
-
   return (
     <div className="flex items-center justify-between">
       <CardTitle>
@@ -116,7 +112,16 @@ export function StockChart() {
   const chartTimeframe = useUIStore(s => s.chartTimeframe);
   const setChartTimeframe = useUIStore(s => s.setChartTimeframe);
 
+  useChartUpdates(selectedTicker, chartTimeframe);
+
   const {data, isLoading} = useStockHistory(selectedTicker, chartTimeframe);
+
+  const latestPrice = data?.[data.length - 1]?.price;
+  const previousPrice = data?.[data.length - 2]?.price;
+  const priceChange =
+    latestPrice !== undefined && previousPrice !== undefined
+      ? ((latestPrice - previousPrice) / previousPrice) * 100
+      : 0;
 
   if (!selectedTicker) {
     return (
@@ -176,6 +181,8 @@ export function StockChart() {
           ticker={selectedTicker}
           timeframe={chartTimeframe}
           onTimeframeChange={setChartTimeframe}
+          latestPrice={latestPrice}
+          priceChange={priceChange}
         />
       </CardHeader>
       <CardContent>

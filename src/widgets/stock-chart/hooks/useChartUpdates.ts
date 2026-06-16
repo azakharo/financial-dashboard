@@ -1,10 +1,30 @@
 import {useRef, useEffect} from 'react';
 import {useQueryClient} from '@tanstack/react-query';
 import {throttle} from 'lodash';
+import useWebSocket from 'react-use-websocket';
 
 import type {PricePoint, WSPriceUpdate} from '@/shared/api';
 
+const WS_URL = '/ws';
 const THROTTLE_MS = 100;
+
+interface RawWSPriceUpdate {
+  ticker: string;
+  price: number;
+  timestamp: string;
+}
+
+function parseWSMessage(data: string): RawWSPriceUpdate[] {
+  return JSON.parse(data) as RawWSPriceUpdate[];
+}
+
+function toWSPriceUpdate(raw: RawWSPriceUpdate): WSPriceUpdate {
+  return {
+    ticker: raw.ticker,
+    price: raw.price,
+    timestamp: new Date(raw.timestamp),
+  };
+}
 
 function mergePricePoints(
   existing: PricePoint[] | undefined,
@@ -38,6 +58,10 @@ export function useChartUpdates(ticker: string | null, timeframe: string) {
   const bufferRef = useRef(new Map<string, WSPriceUpdate>());
   const throttledFlushRef = useRef<ReturnType<typeof throttle> | null>(null);
 
+  const {lastMessage} = useWebSocket(WS_URL, {
+    share: true,
+  });
+
   useEffect(() => {
     if (!ticker) return;
 
@@ -68,13 +92,23 @@ export function useChartUpdates(ticker: string | null, timeframe: string) {
     };
   }, [queryClient, ticker, timeframe]);
 
-  const addToBuffer = (update: WSPriceUpdate) => {
-    bufferRef.current.set(
-      `${update.ticker}-${update.timestamp.getTime()}`,
-      update,
-    );
-    throttledFlushRef.current?.();
-  };
+  useEffect(() => {
+    if (!lastMessage || !ticker) return;
 
-  return {addToBuffer};
+    try {
+      const rawUpdates = parseWSMessage(lastMessage.data as string);
+      for (const raw of rawUpdates) {
+        if (raw.ticker === ticker) {
+          const update = toWSPriceUpdate(raw);
+          bufferRef.current.set(
+            `${update.ticker}-${update.timestamp.getTime()}`,
+            update,
+          );
+        }
+      }
+      throttledFlushRef.current?.();
+    } catch {
+      console.error('Failed to parse WS message in useChartUpdates');
+    }
+  }, [lastMessage, ticker]);
 }
