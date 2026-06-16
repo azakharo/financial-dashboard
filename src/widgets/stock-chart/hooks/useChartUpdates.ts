@@ -1,0 +1,80 @@
+import {useRef, useEffect} from 'react';
+import {useQueryClient} from '@tanstack/react-query';
+import {throttle} from 'lodash';
+
+import type {PricePoint, WSPriceUpdate} from '@/shared/api';
+
+const THROTTLE_MS = 100;
+
+function mergePricePoints(
+  existing: PricePoint[] | undefined,
+  updates: WSPriceUpdate[],
+): PricePoint[] | undefined {
+  if (!existing) return existing;
+
+  let hasChanges = false;
+  const newPoints = [...existing];
+
+  for (const update of updates) {
+    const lastPoint = newPoints[newPoints.length - 1];
+    if (lastPoint) {
+      const lastTime = lastPoint.timestamp.getTime();
+      const updateTime = update.timestamp.getTime();
+      if (updateTime >= lastTime - 60000) {
+        newPoints.push({
+          timestamp: update.timestamp,
+          price: update.price,
+        });
+        hasChanges = true;
+      }
+    }
+  }
+
+  return hasChanges ? newPoints : existing;
+}
+
+export function useChartUpdates(ticker: string | null, timeframe: string) {
+  const queryClient = useQueryClient();
+  const bufferRef = useRef(new Map<string, WSPriceUpdate>());
+  const throttledFlushRef = useRef<ReturnType<typeof throttle> | null>(null);
+
+  useEffect(() => {
+    if (!ticker) return;
+
+    const flush = () => {
+      const updates = Array.from(bufferRef.current.values());
+      bufferRef.current.clear();
+
+      if (updates.length > 0) {
+        const relevantUpdates = updates.filter(u => u.ticker === ticker);
+        if (relevantUpdates.length > 0) {
+          queryClient.setQueryData(
+            ['stockHistory', ticker, timeframe],
+            (old: PricePoint[] | undefined) =>
+              mergePricePoints(old, relevantUpdates),
+          );
+        }
+      }
+    };
+
+    throttledFlushRef.current = throttle(flush, THROTTLE_MS, {
+      leading: false,
+      trailing: true,
+    });
+
+    return () => {
+      throttledFlushRef.current?.cancel();
+      throttledFlushRef.current = null;
+    };
+  }, [queryClient, ticker, timeframe]);
+
+  const addToBuffer = (update: WSPriceUpdate) => {
+    bufferRef.current.set(
+      `${update.ticker}-${update.timestamp.getTime()}`,
+      update,
+    );
+    throttledFlushRef.current?.();
+  };
+
+  return {addToBuffer};
+}
