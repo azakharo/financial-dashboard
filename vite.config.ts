@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import babel from 'vite-plugin-babel';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
@@ -18,6 +17,18 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+      '/ws': {
+        target: 'ws://localhost:3001',
+        ws: true,
+      },
     },
   },
 });
