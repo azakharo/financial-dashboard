@@ -1,13 +1,10 @@
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
+import {DashboardPage} from '@/pages/dashboard';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      <div className="flex min-h-screen items-center justify-center">
-        <h1 className="text-2xl">Dashboard</h1>
-      </div>
-    ),
+    element: <DashboardPage />,
   },
 ]);
 
