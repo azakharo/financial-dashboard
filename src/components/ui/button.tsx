@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Slot} from 'radix-ui';
 
-import {cn} from '@/lib/utils';
+import {cn} from '@/shared/lib';
 import {buttonVariants, type ButtonVariantProps} from './button-variants';
 
 function Button({
