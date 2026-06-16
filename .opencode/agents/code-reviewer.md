@@ -2,8 +2,21 @@
 description: Code reviewer для проверки корректности реализации, архитектуры, для проверки соблюдения правил, установленных в проекте. Запускать вручную для ревью кода.
 mode: subagent
 permission:
+  read: allow
   edit: deny
-  bash: ask
+  bash:
+    '*': deny
+    'git diff*': allow
+    'git log*': allow
+    'git show*': allow
+    'git status*': allow
+    'git blame*': allow
+    'git ls-files*': allow
+  task:
+    '*': deny
+  skill:
+    '*': deny
+    'caveman': allow
 ---
 
 # Code Reviewer
