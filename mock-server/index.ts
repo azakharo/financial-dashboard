@@ -6,6 +6,10 @@ import { registerPortfolioRoutes } from './routes/portfolio'
 import { registerHistoryRoutes } from './routes/history'
 import { setupWebSocket } from './websocket/price-feed'
 import { getPreset } from './data/presets'
+import { initPortfolioState } from './data/portfolio'
+import { stocks } from './data/stocks'
+
+initPortfolioState(stocks, getPreset())
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001
 
