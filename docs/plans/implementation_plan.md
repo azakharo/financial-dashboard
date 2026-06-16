@@ -86,7 +86,7 @@ http GET http://localhost:3001/api/stocks limit==10
 http GET http://localhost:3001/api/portfolio
 
 # Купить акцию
-http POST http://localhost:3001/api/portfolio/buy ticker=AAPL quantity=10
+http POST http://localhost:3001/api/portfolio/buy ticker=AAPL quantity:=10
 
 # Получить историю
 http GET http://localhost:3001/api/stocks/AAPL/history timeframe==1D

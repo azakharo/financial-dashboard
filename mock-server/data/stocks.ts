@@ -18,23 +18,23 @@ export interface Stock {
   quantityInPortfolio: number
 }
 
-const TICKER_PREFIXES = [
-  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-]
-
 const COMPANY_SUFFIXES = [
   'Corp', 'Inc', 'Ltd', 'Group', 'Holdings', 'Systems', 'Technologies',
   'Industries', 'Partners', 'Enterprises', 'Solutions', 'Dynamics',
 ]
 
 function generateTicker(index: number): string {
-  if (index < 26) {
-    return TICKER_PREFIXES[index]
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  const ticker = []
+  let i = index
+  do {
+    ticker.unshift(chars[i % 26])
+    i = Math.floor(i / 26)
+  } while (i > 0)
+  while (ticker.length < 3) {
+    ticker.push(chars[Math.floor(Math.random() * 26)])
   }
-  const first = Math.floor(index / 26)
-  const second = index % 26
-  return TICKER_PREFIXES[first] + TICKER_PREFIXES[second]
+  return ticker.slice(0, 4).join('')
 }
 
 function generateCompanyName(ticker: string, index: number): string {
