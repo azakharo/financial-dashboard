@@ -1,3 +1,3 @@
 export * from './api';
 export * from './lib';
-export * from './store/uiStore';
+export {useUIStore, type UIStore, type TradeMode} from './store';
