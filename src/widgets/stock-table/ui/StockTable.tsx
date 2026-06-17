@@ -1,7 +1,6 @@
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {useStocks} from '@/entities/stock';
 import {useUIStore} from '@/shared/store';
-import {usePriceFeed} from '@/shared/api';
 import type {Stock} from '@/shared/api';
 
 import {TableFilters} from './TableFilters';
@@ -27,7 +26,7 @@ export function StockTable() {
       search: searchQuery || undefined,
     });
 
-  usePriceFeed();
+  // usePriceFeed();
 
   const stocks = flattenStocks(data);
 
