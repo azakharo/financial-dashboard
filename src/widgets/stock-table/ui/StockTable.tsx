@@ -5,6 +5,7 @@ import type {Stock} from '@/shared/api';
 
 import {TableFilters} from './TableFilters';
 import {StockTableBody} from './StockTableBody';
+import {useMemo} from 'react';
 
 function flattenStocks(data: ReturnType<typeof useStocks>['data']): Stock[] {
   if (!data) return [];
@@ -28,7 +29,7 @@ export function StockTable() {
 
   // usePriceFeed();
 
-  const stocks = flattenStocks(data);
+  const stocks = useMemo(() => flattenStocks(data), [data]);
 
   const handleSelect = (ticker: string) => {
     setSelectedTicker(ticker);
