@@ -1,7 +1,7 @@
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {useStocks} from '@/entities/stock';
 import {useUIStore} from '@/shared/store';
-import type {Stock} from '@/shared/api';
+import {usePriceFeed, type Stock} from '@/shared/api';
 
 import {TableFilters} from './TableFilters';
 import {StockTableBody} from './StockTableBody';
@@ -27,7 +27,10 @@ export function StockTable() {
       search: searchQuery || undefined,
     });
 
-  // usePriceFeed();
+  usePriceFeed({
+    sector: sectorFilter ?? undefined,
+    search: searchQuery || undefined,
+  });
 
   const stocks = useMemo(() => flattenStocks(data), [data]);
 

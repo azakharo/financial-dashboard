@@ -1,11 +1,11 @@
 import {useRef, useEffect} from 'react';
 import useWebSocket, {ReadyState} from 'react-use-websocket';
 import {throttle} from 'lodash';
-import {useQueryClient} from '@tanstack/react-query';
-import type {Stock, WSPriceUpdate} from './types';
+import {useQueryClient, type InfiniteData} from '@tanstack/react-query';
+import type {Stock, WSPriceUpdate, PaginatedResponse} from './types';
 
 const WS_URL = '/ws';
-const THROTTLE_MS = 100;
+const THROTTLE_MS = 1000;
 
 interface RawWSPriceUpdate {
   ticker: string;
@@ -26,27 +26,42 @@ function toWSPriceUpdate(raw: RawWSPriceUpdate): WSPriceUpdate {
 }
 
 function applyPriceUpdates(
-  stocks: Stock[] | undefined,
-  updates: WSPriceUpdate[],
-): Stock[] | undefined {
-  if (!stocks) return stocks;
+  pages: PaginatedResponse<Stock>[] | undefined,
+  updates: Map<string, number>,
+): PaginatedResponse<Stock>[] | undefined {
+  if (!pages) return pages;
 
-  const updateMap = new Map(updates.map(u => [u.ticker, u.price]));
   let hasChanges = false;
 
-  const newStocks = stocks.map(stock => {
-    const newPrice = updateMap.get(stock.ticker);
-    if (newPrice !== undefined && newPrice !== stock.currentPrice) {
+  const newPages = pages.map(page => {
+    let pageHasChanges = false;
+
+    const newStocks = page.stocks.map(stock => {
+      const newPrice = updates.get(stock.ticker);
+      if (newPrice !== undefined && newPrice !== stock.currentPrice) {
+        pageHasChanges = true;
+        return {...stock, currentPrice: newPrice};
+      }
+      return stock;
+    });
+
+    if (pageHasChanges) {
       hasChanges = true;
-      return {...stock, currentPrice: newPrice};
+      return {...page, stocks: newStocks};
     }
-    return stock;
+    return page;
   });
 
-  return hasChanges ? newStocks : stocks;
+  return hasChanges ? newPages : pages;
 }
 
-export function usePriceFeed() {
+interface UsePriceFeedParams {
+  sector?: string;
+  search?: string;
+}
+
+export function usePriceFeed(params: UsePriceFeedParams = {}) {
+  const {sector, search} = params;
   const queryClient = useQueryClient();
   const bufferRef = useRef(new Map<string, WSPriceUpdate>());
   const throttledFlushRef = useRef<ReturnType<typeof throttle> | null>(null);
@@ -57,8 +72,16 @@ export function usePriceFeed() {
       bufferRef.current.clear();
 
       if (updates.length > 0) {
-        queryClient.setQueryData(['stocks'], (old: Stock[] | undefined) =>
-          applyPriceUpdates(old, updates),
+        const priceMap = new Map(updates.map(u => [u.ticker, u.price]));
+
+        queryClient.setQueryData(
+          ['stocks', {sector, search}],
+          (old: InfiniteData<PaginatedResponse<Stock>> | undefined) => {
+            if (!old) return old;
+            const newPages = applyPriceUpdates(old.pages, priceMap);
+            if (newPages === old.pages) return old;
+            return {...old, pages: newPages};
+          },
         );
       }
     };
@@ -72,7 +95,7 @@ export function usePriceFeed() {
       throttledFlushRef.current?.cancel();
       throttledFlushRef.current = null;
     };
-  }, [queryClient]);
+  }, [queryClient, sector, search]);
 
   const {readyState, lastMessage} = useWebSocket(WS_URL, {
     share: true,
