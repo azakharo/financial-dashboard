@@ -4,6 +4,8 @@ import { stocks } from '../data/stocks'
 import { addPricePoint } from '../data/history'
 import { recalculateTotalValue } from '../data/portfolio'
 
+const isSingleStockPriceUpdate = true
+
 export interface WSPriceUpdate {
   ticker: string
   price: number
@@ -46,9 +48,8 @@ export class PriceBroadcaster {
 
     const updates: WSPriceUpdate[] = []
 
-    for (let i = 0; i < 10; i++) {
-      const randomIndex = Math.floor(Math.random() * stocks.length)
-      const stock = stocks[randomIndex]
+    if (isSingleStockPriceUpdate) {
+      const stock = stocks[0]
 
       const changePercent = (Math.random() - 0.5) * 0.01
       stock.currentPrice = Math.round(stock.currentPrice * (1 + changePercent) * 100) / 100
@@ -65,6 +66,27 @@ export class PriceBroadcaster {
 
       updates.push(update)
       addPricePoint(stock.ticker, stock.currentPrice)
+    } else {
+      for (let i = 0; i < 10; i++) {
+        const randomIndex = Math.floor(Math.random() * stocks.length)
+        const stock = stocks[randomIndex]
+
+        const changePercent = (Math.random() - 0.5) * 0.01
+        stock.currentPrice = Math.round(stock.currentPrice * (1 + changePercent) * 100) / 100
+
+        if (stock.currentPrice < 0.01) {
+          stock.currentPrice = 0.01
+        }
+
+        const update: WSPriceUpdate = {
+          ticker: stock.ticker,
+          price: stock.currentPrice,
+          timestamp: new Date().toISOString(),
+        }
+
+        updates.push(update)
+        addPricePoint(stock.ticker, stock.currentPrice)
+      }
     }
 
     recalculateTotalValue(stocks)
@@ -79,7 +101,7 @@ export class PriceBroadcaster {
 }
 
 export function setupWebSocket(_app: Express, server: import('http').Server): PriceBroadcaster {
-  const broadcaster = new PriceBroadcaster(50)
+  const broadcaster = new PriceBroadcaster(5000)
 
   const wss = new WebSocketServer({ noServer: true })
 
@@ -96,5 +118,6 @@ export function setupWebSocket(_app: Express, server: import('http').Server): Pr
   })
 
   broadcaster.start()
+  console.log(`WebSocket mode: ${isSingleStockPriceUpdate ? 'single stock update' : 'multi stock update'}`)
   return broadcaster
 }
