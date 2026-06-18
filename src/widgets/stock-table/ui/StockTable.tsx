@@ -81,12 +81,12 @@ export function StockTable() {
             font-medium text-muted-foreground
           "
         >
-          <div className="w-24">Тикер</div>
-          <div className="flex-1">Название</div>
+          <div className="min-w-12">Тикер</div>
+          <div className="min-w-32">Название</div>
           <div className="w-32 text-right">Цена</div>
           <div className="w-24 text-right">24ч</div>
           <div className="w-24 text-right">В портфеле</div>
-          <div className="w-32 text-right">Действия</div>
+          <div className="w-48 text-right">Действия</div>
         </div>
         <StockTableBody
           stocks={stocks}

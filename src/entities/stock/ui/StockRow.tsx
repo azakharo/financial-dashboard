@@ -63,7 +63,7 @@ export const StockRow: React.FC<StockRowProps> = memo(function StockRow({
       <div className="w-24 text-right font-mono">
         {stock.quantityInPortfolio.toLocaleString('ru-RU')}
       </div>
-      <div className="flex w-32 justify-end gap-2">
+      <div className="flex w-48 justify-end gap-2">
         <Button
           size="sm"
           variant="default"
