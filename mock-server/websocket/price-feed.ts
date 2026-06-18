@@ -101,7 +101,7 @@ export class PriceBroadcaster {
 }
 
 export function setupWebSocket(_app: Express, server: import('http').Server): PriceBroadcaster {
-  const broadcaster = new PriceBroadcaster(5000)
+  const broadcaster = new PriceBroadcaster(1000)
 
   const wss = new WebSocketServer({ noServer: true })
 

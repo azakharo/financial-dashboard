@@ -123,5 +123,3 @@ export function usePriceFeed(params: UsePriceFeedParams = {}) {
 
   return {isConnected, readyState};
 }
-
-export {ReadyState};
