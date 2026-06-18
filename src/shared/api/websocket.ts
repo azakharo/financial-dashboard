@@ -5,7 +5,7 @@ import {useQueryClient, type InfiniteData} from '@tanstack/react-query';
 import type {Stock, WSPriceUpdate, PaginatedResponse} from './types';
 
 const WS_URL = '/ws';
-const THROTTLE_MS = 1000;
+const THROTTLE_MS = 2000;
 
 interface RawWSPriceUpdate {
   ticker: string;

@@ -23,7 +23,7 @@
 | Графики                        | Recharts                | Указано пользователем. Поддержка анимации через `isAnimationActive`        |
 | Работа с датами                | date-fns                | Указано в react_rules.md                                                   |
 | WebSocket                      | react-use-websocket     | React hook API, авто-реконнект, share-режим, message queue                 |
-| Throttle/batch обновлений      | lodash                  | Проверенная реализация, tree-shaking                                      |
+| Throttle/batch обновлений      | lodash                  | Проверенная реализация, tree-shaking                                       |
 
 ---
 
@@ -81,7 +81,7 @@ interface UIState {
 ### 3.2 Интеграция WebSocket с React Query
 
 ```
-WebSocket (50ms) → Buffer → Throttle (100-150ms) → queryClient.setQueryData
+WebSocket (50ms) → Buffer → Throttle (2000ms) → queryClient.setQueryData
                                                               ↓
                                           React Query cache update
                                                               ↓
@@ -90,7 +90,7 @@ WebSocket (50ms) → Buffer → Throttle (100-150ms) → queryClient.setQueryDat
 
 **Ключевые оптимизации:**
 
-- Батчинг обновлений: собираем обновления за 100-150ms, применяем разом
+- Батчинг обновлений: собираем обновления за 2000ms, применяем разом
 - `structuralSharing: true` в React Query — минимизация ре-рендеров
 - Виртуализация — рендер только видимых строк
 
@@ -116,7 +116,7 @@ WebSocket (50ms) → Buffer → Throttle (100-150ms) → queryClient.setQueryDat
 **react-use-websocket hook:**
 
 ```typescript
-const { lastMessage, readyState, sendJsonMessage } = useWebSocket(WS_URL, {
+const {lastMessage, readyState, sendJsonMessage} = useWebSocket(WS_URL, {
   share: true,
   shouldReconnect: () => true,
   reconnectInterval: 3000,
@@ -136,10 +136,10 @@ const buffer = useRef<Map<string, WSPriceUpdate>>(new Map());
 const throttledFlush = throttle(() => {
   const updates = Array.from(buffer.current.values());
   buffer.current.clear();
-  queryClient.setQueryData(['stocks'], (old: Stock[]) => 
-    applyUpdates(old, updates)
+  queryClient.setQueryData(['stocks'], (old: Stock[]) =>
+    applyUpdates(old, updates),
   );
-}, 100);
+}, 2000);
 
 const handleMessage = (message: MessageEvent) => {
   const update = JSON.parse(message.data);

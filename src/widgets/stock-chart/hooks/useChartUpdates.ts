@@ -6,7 +6,7 @@ import useWebSocket from 'react-use-websocket';
 import type {PricePoint, WSPriceUpdate} from '@/shared/api';
 
 const WS_URL = '/ws';
-const THROTTLE_MS = 100;
+const THROTTLE_MS = 2000;
 
 interface RawWSPriceUpdate {
   ticker: string;
