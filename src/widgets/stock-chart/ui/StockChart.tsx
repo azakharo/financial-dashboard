@@ -18,8 +18,20 @@ import {useMemo} from 'react';
 
 const TIMEFRAMES: Timeframe[] = ['1D', '1W', '1M', '1Y'];
 
-function formatTimestamp(timestamp: Date): string {
-  return format(timestamp, 'HH:mm');
+function formatXAxisTimestamp(ts: number, timeframe: Timeframe): string {
+  const date = new Date(ts);
+  switch (timeframe) {
+    case '1D':
+      return format(date, 'HH:mm');
+    case '1W':
+      return format(date, 'eeee');
+    case '1M':
+      return format(date, 'dd.MM');
+    case '1Y':
+      return format(date, 'LLL');
+    default:
+      return format(date, 'd MMM');
+  }
 }
 
 function formatTooltipTimestamp(timestamp: Date): string {
@@ -27,17 +39,19 @@ function formatTooltipTimestamp(timestamp: Date): string {
 }
 
 interface ChartDataPoint {
+  ts: number;
   timestamp: Date;
   price: number;
-  formattedTime: string;
 }
 
 function prepareChartData(points: PricePoint[]): ChartDataPoint[] {
-  return points.map(p => ({
-    timestamp: p.timestamp,
-    price: p.price,
-    formattedTime: formatTimestamp(p.timestamp),
-  }));
+  return points.map(p => {
+    return {
+      ts: p.timestamp.getTime(),
+      timestamp: p.timestamp,
+      price: p.price,
+    };
+  });
 }
 
 interface TimeframeSelectorProps {
@@ -206,11 +220,18 @@ export function StockChart() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
               <XAxis
-                dataKey="formattedTime"
+                dataKey="ts"
+                type="number"
+                scale="time"
+                domain={['dataMin', 'dataMax']}
+                tickFormatter={(ts: number) =>
+                  formatXAxisTimestamp(ts, chartTimeframe)
+                }
                 tick={{fontSize: 12}}
                 tickLine={false}
                 axisLine={false}
                 className="text-muted-foreground"
+                interval="preserveStartEnd"
               />
               <YAxis
                 domain={['auto', 'auto']}
