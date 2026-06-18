@@ -14,6 +14,7 @@ import {format} from 'date-fns';
 import {useStockHistory} from '@/entities/price-history';
 import {useUIStore} from '@/shared/store';
 import type {Timeframe, PricePoint} from '@/shared/api';
+import {useMemo} from 'react';
 
 const TIMEFRAMES: Timeframe[] = ['1D', '1W', '1M', '1Y'];
 
@@ -112,6 +113,10 @@ export function StockChart() {
 
   const {data, isLoading} = useStockHistory(selectedTicker, chartTimeframe);
 
+  const preparedData = useMemo(() => {
+    return prepareChartData(data ?? []);
+  }, [data]);
+
   const latestPrice = data?.[data.length - 1]?.price;
   const previousPrice = data?.[data.length - 2]?.price;
   const priceChange =
@@ -184,7 +189,7 @@ export function StockChart() {
       <CardContent>
         <div className="h-80" data-testid="stock-chart-container">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={prepareChartData(data)}>
+            <AreaChart data={preparedData}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                   <stop
