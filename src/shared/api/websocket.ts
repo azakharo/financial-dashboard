@@ -2,7 +2,13 @@ import {useRef, useEffect, useCallback} from 'react';
 import useWebSocket, {ReadyState} from 'react-use-websocket';
 import {throttle} from 'lodash';
 import {useQueryClient, type InfiniteData} from '@tanstack/react-query';
-import type {Stock, WSPriceUpdate, PaginatedResponse} from './types';
+import type {
+  Stock,
+  WSPriceUpdate,
+  PaginatedResponse,
+  PricePoint,
+} from './types';
+import {useUIStore} from '@/shared/store';
 
 const WS_URL = '/ws';
 const THROTTLE_MS = 2000;
@@ -83,6 +89,33 @@ export function usePriceFeed(params: UsePriceFeedParams = {}) {
             return {...old, pages: newPages};
           },
         );
+
+        const {selectedTicker, chartTimeframe} = useUIStore.getState();
+        if (selectedTicker && chartTimeframe === '1D') {
+          const chartUpdate = updates.find(u => u.ticker === selectedTicker);
+          if (chartUpdate) {
+            queryClient.setQueryData(
+              ['stockHistory', selectedTicker, '1D'],
+              (old: PricePoint[] | undefined) => {
+                if (!old || old.length === 0) return old;
+                const lastPoint = old[old.length - 1];
+                if (
+                  chartUpdate.timestamp.getTime() >
+                  lastPoint.timestamp.getTime()
+                ) {
+                  return [
+                    ...old,
+                    {
+                      timestamp: chartUpdate.timestamp,
+                      price: chartUpdate.price,
+                    },
+                  ];
+                }
+                return old;
+              },
+            );
+          }
+        }
       }
     };
 
