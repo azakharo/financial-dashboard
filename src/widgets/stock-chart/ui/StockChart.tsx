@@ -10,21 +10,19 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import {format} from 'date-fns';
-import {ru} from 'date-fns/locale';
 
 import {useStockHistory} from '@/entities/price-history';
 import {useUIStore} from '@/shared/store';
 import type {Timeframe, PricePoint} from '@/shared/api';
-import {useChartUpdates} from '../hooks/useChartUpdates';
 
 const TIMEFRAMES: Timeframe[] = ['1D', '1W', '1M', '1Y'];
 
 function formatTimestamp(timestamp: Date): string {
-  return format(timestamp, 'HH:mm', {locale: ru});
+  return format(timestamp, 'HH:mm');
 }
 
 function formatTooltipTimestamp(timestamp: Date): string {
-  return format(timestamp, 'd MMM, HH:mm', {locale: ru});
+  return format(timestamp, 'd MMM, HH:mm');
 }
 
 interface ChartDataPoint {
@@ -111,8 +109,6 @@ export function StockChart() {
   const selectedTicker = useUIStore(s => s.selectedTicker);
   const chartTimeframe = useUIStore(s => s.chartTimeframe);
   const setChartTimeframe = useUIStore(s => s.setChartTimeframe);
-
-  useChartUpdates(selectedTicker, chartTimeframe);
 
   const {data, isLoading} = useStockHistory(selectedTicker, chartTimeframe);
 

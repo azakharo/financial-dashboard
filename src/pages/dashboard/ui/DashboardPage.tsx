@@ -1,6 +1,6 @@
 import {PortfolioInfo} from '@/entities/portfolio';
 import {StockTable} from '@/widgets/stock-table';
-// import {StockChart} from '@/widgets/stock-chart';
+import {StockChart} from '@/widgets/stock-chart';
 import {TradeModal} from '@/features/portfolio-trade';
 
 export const DashboardPage: React.FC = () => {
@@ -15,7 +15,7 @@ export const DashboardPage: React.FC = () => {
           "
         >
           <StockTable />
-          {/* <StockChart /> */}
+          <StockChart />
         </div>
         <TradeModal />
       </div>
