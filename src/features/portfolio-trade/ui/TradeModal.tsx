@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/shared/ui/dialog';
 import {useStocks} from '@/entities/stock';
 import type {Stock} from '@/shared/api';
 import {useUIStore} from '@/shared/store';

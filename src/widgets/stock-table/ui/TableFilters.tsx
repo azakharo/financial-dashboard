@@ -1,7 +1,7 @@
 import {Search} from 'lucide-react';
 
-import {Input} from '@/components/ui/input';
-import {Badge} from '@/components/ui/badge';
+import {Input} from '@/shared/ui/input';
+import {Badge} from '@/shared/ui/badge';
 import {SECTORS, type Sector} from '@/shared/api';
 
 interface TableFiltersProps {

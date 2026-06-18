@@ -1,4 +1,4 @@
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Card, CardContent, CardHeader, CardTitle} from '@/shared/ui/card';
 import {useStocks} from '@/entities/stock';
 import {useUIStore} from '@/shared/store';
 import {usePriceFeed, type Stock} from '@/shared/api';

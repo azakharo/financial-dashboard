@@ -1,6 +1,6 @@
 import {memo} from 'react';
 import type {Stock} from '@/shared/api';
-import {Button} from '@/components/ui/button';
+import {Button} from '@/shared/ui/button';
 
 interface StockRowProps {
   stock: Stock;
