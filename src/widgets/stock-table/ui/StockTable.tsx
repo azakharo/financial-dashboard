@@ -2,6 +2,7 @@ import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {useStocks} from '@/entities/stock';
 import {useUIStore} from '@/shared/store';
 import {usePriceFeed, type Stock} from '@/shared/api';
+import {useDebouncedValue} from '@/shared/lib';
 
 import {TableFilters} from './TableFilters';
 import {StockTableBody} from './StockTableBody';
@@ -21,22 +22,24 @@ export function StockTable() {
   const setSearchQuery = useUIStore(s => s.setSearchQuery);
   const openTradeModal = useUIStore(s => s.openTradeModal);
 
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 500);
+
   const {data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage} =
     useStocks({
       sector: sectorFilter ?? undefined,
-      search: searchQuery || undefined,
+      search: debouncedSearchQuery || undefined,
     });
 
   usePriceFeed({
     sector: sectorFilter ?? undefined,
-    search: searchQuery || undefined,
+    search: debouncedSearchQuery || undefined,
   });
 
   const stocks = useMemo(() => flattenStocks(data), [data]);
 
   const queryKey = useMemo(
-    () => `${sectorFilter ?? 'all'}-${searchQuery ?? ''}`,
-    [sectorFilter, searchQuery],
+    () => `${sectorFilter ?? 'all'}-${debouncedSearchQuery ?? ''}`,
+    [sectorFilter, debouncedSearchQuery],
   );
 
   const handleSelect = useCallback(
