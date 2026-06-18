@@ -55,7 +55,6 @@ shared → entities → features → widgets → pages → app
 
 **Запрещено:**
 
-- `useMemo` / `useCallback` — React Compiler оптимизирует автоматически
 - `any` в TypeScript
 - Дефолтные экспорты для компонентов
 
