@@ -1,4 +1,4 @@
-import {useRef, useEffect} from 'react';
+import {useRef, useEffect, useCallback} from 'react';
 import useWebSocket, {ReadyState} from 'react-use-websocket';
 import {throttle} from 'lodash';
 import {useQueryClient, type InfiniteData} from '@tanstack/react-query';
@@ -97,18 +97,9 @@ export function usePriceFeed(params: UsePriceFeedParams = {}) {
     };
   }, [queryClient, sector, search]);
 
-  const {readyState, lastMessage} = useWebSocket(WS_URL, {
-    share: true,
-    shouldReconnect: () => true,
-    reconnectInterval: 3000,
-    reconnectAttempts: 10,
-  });
-
-  useEffect(() => {
-    if (!lastMessage) return;
-
+  const handleMessage = useCallback((event: MessageEvent) => {
     try {
-      const rawUpdates = parseWSMessage(lastMessage.data as string);
+      const rawUpdates = parseWSMessage(event.data as string);
       for (const raw of rawUpdates) {
         const update = toWSPriceUpdate(raw);
         bufferRef.current.set(update.ticker, update);
@@ -117,7 +108,16 @@ export function usePriceFeed(params: UsePriceFeedParams = {}) {
     } catch {
       console.error('Failed to parse WS message');
     }
-  }, [lastMessage]);
+  }, []);
+
+  const {readyState} = useWebSocket(WS_URL, {
+    share: true,
+    shouldReconnect: () => true,
+    reconnectInterval: 3000,
+    reconnectAttempts: 10,
+    filter: () => false,
+    onMessage: handleMessage,
+  });
 
   const isConnected = readyState === ReadyState.OPEN;
 
