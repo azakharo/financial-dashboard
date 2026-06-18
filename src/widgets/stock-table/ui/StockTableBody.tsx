@@ -1,8 +1,51 @@
-import {useRef} from 'react';
+import {memo, useMemo, useRef} from 'react';
 import {useVirtualizer} from '@tanstack/react-virtual';
 
 import type {Stock} from '@/shared/api';
 import {StockRow} from '@/entities/stock';
+
+interface VirtualizedRowProps {
+  stock: Stock;
+  isSelected: boolean;
+  onSelect: (ticker: string) => void;
+  onBuy: (ticker: string) => void;
+  onSell: (ticker: string) => void;
+  size: number;
+  start: number;
+}
+
+const VirtualizedRow = memo(function VirtualizedRow({
+  stock,
+  isSelected,
+  onSelect,
+  onBuy,
+  onSell,
+  size,
+  start,
+}: VirtualizedRowProps) {
+  const style = useMemo(
+    () => ({
+      position: 'absolute' as const,
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: `${size}px`,
+      transform: `translateY(${start}px)`,
+    }),
+    [size, start],
+  );
+
+  return (
+    <StockRow
+      stock={stock}
+      isSelected={isSelected}
+      onSelect={onSelect}
+      onBuy={onBuy}
+      onSell={onSell}
+      style={style}
+    />
+  );
+});
 
 interface StockTableBodyProps {
   stocks: Stock[];
@@ -13,7 +56,7 @@ interface StockTableBodyProps {
   isLoading?: boolean;
 }
 
-export function StockTableBody({
+export const StockTableBody = memo(function StockTableBody({
   stocks,
   selectedTicker,
   onSelect,
@@ -59,25 +102,19 @@ export function StockTableBody({
         {rowVirtualizer.getVirtualItems().map(virtualRow => {
           const stock = stocks[virtualRow.index];
           return (
-            <StockRow
+            <VirtualizedRow
               key={stock.ticker}
               stock={stock}
               isSelected={selectedTicker === stock.ticker}
               onSelect={onSelect}
               onBuy={onBuy}
               onSell={onSell}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
+              size={virtualRow.size}
+              start={virtualRow.start}
             />
           );
         })}
       </div>
     </div>
   );
-}
+});

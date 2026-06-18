@@ -5,7 +5,7 @@ import {usePriceFeed, type Stock} from '@/shared/api';
 
 import {TableFilters} from './TableFilters';
 import {StockTableBody} from './StockTableBody';
-import {useMemo} from 'react';
+import {useCallback, useMemo} from 'react';
 
 function flattenStocks(data: ReturnType<typeof useStocks>['data']): Stock[] {
   if (!data) return [];
@@ -34,17 +34,26 @@ export function StockTable() {
 
   const stocks = useMemo(() => flattenStocks(data), [data]);
 
-  const handleSelect = (ticker: string) => {
-    setSelectedTicker(ticker);
-  };
+  const handleSelect = useCallback(
+    (ticker: string) => {
+      setSelectedTicker(ticker);
+    },
+    [setSelectedTicker],
+  );
 
-  const handleBuy = (ticker: string) => {
-    openTradeModal(ticker, 'buy');
-  };
+  const handleBuy = useCallback(
+    (ticker: string) => {
+      openTradeModal(ticker, 'buy');
+    },
+    [openTradeModal],
+  );
 
-  const handleSell = (ticker: string) => {
-    openTradeModal(ticker, 'sell');
-  };
+  const handleSell = useCallback(
+    (ticker: string) => {
+      openTradeModal(ticker, 'sell');
+    },
+    [openTradeModal],
+  );
 
   return (
     <Card>
