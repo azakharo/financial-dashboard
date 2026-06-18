@@ -202,7 +202,7 @@ export function StockChart() {
       </CardHeader>
       <CardContent>
         <div className="h-80" data-testid="stock-chart-container">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={400}>
             <AreaChart data={preparedData}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
