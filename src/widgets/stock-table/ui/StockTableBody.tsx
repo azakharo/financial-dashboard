@@ -1,4 +1,4 @@
-import {memo, useMemo, useRef} from 'react';
+import {memo, useEffect, useMemo, useRef} from 'react';
 import {useVirtualizer} from '@tanstack/react-virtual';
 
 import type {Stock} from '@/shared/api';
@@ -54,6 +54,7 @@ interface StockTableBodyProps {
   onBuy: (ticker: string) => void;
   onSell: (ticker: string) => void;
   isLoading?: boolean;
+  queryKey: string;
 }
 
 export const StockTableBody = memo(function StockTableBody({
@@ -63,6 +64,7 @@ export const StockTableBody = memo(function StockTableBody({
   onBuy,
   onSell,
   isLoading,
+  queryKey,
 }: StockTableBodyProps) {
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -72,6 +74,10 @@ export const StockTableBody = memo(function StockTableBody({
     estimateSize: () => 48,
     overscan: 10,
   });
+
+  useEffect(() => {
+    rowVirtualizer.scrollToIndex(0, {align: 'start'});
+  }, [queryKey, rowVirtualizer]);
 
   if (isLoading) {
     return (

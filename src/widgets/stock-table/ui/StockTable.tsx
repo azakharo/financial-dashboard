@@ -34,6 +34,11 @@ export function StockTable() {
 
   const stocks = useMemo(() => flattenStocks(data), [data]);
 
+  const queryKey = useMemo(
+    () => `${sectorFilter ?? 'all'}-${searchQuery ?? ''}`,
+    [sectorFilter, searchQuery],
+  );
+
   const handleSelect = useCallback(
     (ticker: string) => {
       setSelectedTicker(ticker);
@@ -87,6 +92,7 @@ export function StockTable() {
           onBuy={handleBuy}
           onSell={handleSell}
           isLoading={isLoading}
+          queryKey={queryKey}
         />
         {hasNextPage && (
           <button
