@@ -22,5 +22,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts", "eslint.config.js", "mock-server/**/*.ts"]
+  "include": ["vite.config.ts", "eslint.config.js", "mock-server/**/*.ts", "playwright.config.ts"]
 }
