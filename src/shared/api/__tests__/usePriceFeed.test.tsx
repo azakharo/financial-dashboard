@@ -37,7 +37,10 @@ function sendWSMessage(
   );
 }
 
-function seedStocksCache(qc: ReturnType<typeof createQueryClient>, stocks: Stock[]) {
+function seedStocksCache(
+  qc: ReturnType<typeof createQueryClient>,
+  stocks: Stock[],
+) {
   qc.setQueryData(['stocks', {sector: undefined, search: undefined}], {
     pages: [createPage(stocks)],
     pageParams: [undefined],
