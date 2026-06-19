@@ -1,4 +1,4 @@
-import {describe, expect, it, beforeEach, afterEach, vi} from 'vitest';
+import {describe, expect, it, beforeEach, afterEach, vi, type Mock} from 'vitest';
 import {screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -17,12 +17,13 @@ type MutateHandlers = {
   onSuccess: (data: TradeResponse) => void;
   onError: (error: Error) => void;
 };
-type MockMutate = ReturnType<typeof vi.fn<[MutateArgs, MutateHandlers], void>>;
+type MutateFn = (args: MutateArgs, handlers: MutateHandlers) => void;
+type MockMutate = Mock<MutateFn>;
 
 const {mockBuyFn, mockSellFn} = vi.hoisted(() => {
   return {
-    mockBuyFn: vi.fn<[MutateArgs, MutateHandlers], void>(),
-    mockSellFn: vi.fn<[MutateArgs, MutateHandlers], void>(),
+    mockBuyFn: vi.fn<MutateFn>(),
+    mockSellFn: vi.fn<MutateFn>(),
   };
 });
 
