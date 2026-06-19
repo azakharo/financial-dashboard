@@ -48,6 +48,7 @@
     "@tailwindcss/vite": "4.2.2",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.1",
     "@types/cors": "2.8.19",
     "@types/express": "5.0.6",
     "@types/lodash": "4.17.24",
@@ -72,6 +73,7 @@
     "eslint-plugin-react-x": "2.3.9",
     "globals": "16.5.0",
     "jsdom": "29.1.1",
+    "msw": "2.14.6",
     "prettier": "3.8.1",
     "tailwindcss": "4.2.2",
     "tsx": "4.22.4",
@@ -80,5 +82,10 @@
     "vite": "7.2.4",
     "vite-plugin-babel": "1.6.0",
     "vitest": "4.1.9"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }

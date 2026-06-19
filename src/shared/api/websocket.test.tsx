@@ -1,10 +1,9 @@
 import {describe, expect, it, vi, beforeEach, afterEach} from 'vitest';
 import {renderHook} from '@testing-library/react';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import type {ReactNode} from 'react';
 
 import {usePriceFeed} from '@/shared/api/websocket';
 import {useUIStore} from '@/shared/store';
+import {createWrapper} from '@/tests/utils';
 
 const mockReadyState = {value: 1};
 
@@ -21,22 +20,6 @@ vi.mock('react-use-websocket', () => ({
     CLOSED: 3,
   },
 }));
-
-function createWrapper() {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  });
-
-  return function Wrapper({children}: {children: ReactNode}) {
-    return (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    );
-  };
-}
 
 describe('usePriceFeed', () => {
   beforeEach(() => {
