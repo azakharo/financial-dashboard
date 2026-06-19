@@ -54,4 +54,10 @@ export default defineConfig([
       },
     },
   },
+  {
+    files: ['./src/shared/ui/**/*.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ]);
