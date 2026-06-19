@@ -1,4 +1,12 @@
-import {describe, expect, it, beforeEach, afterEach, vi, type Mock} from 'vitest';
+import {
+  describe,
+  expect,
+  it,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+} from 'vitest';
 import {screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -124,7 +132,9 @@ describe('TradeForm', () => {
     await waitFor(() => {
       expect(mockBuyFn).toHaveBeenCalledWith(
         {ticker: 'AAPL', quantity: 2},
-        expect.objectContaining({onSuccess: expect.any(Function)}),
+        expect.objectContaining({
+          onSuccess: expect.any(Function) as (data: TradeResponse) => void,
+        }),
       );
     });
   });
