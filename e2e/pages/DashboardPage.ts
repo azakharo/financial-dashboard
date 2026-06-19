@@ -1,6 +1,6 @@
 import type {Locator, Page} from '@playwright/test';
 import {expect} from '@playwright/test';
-import {mockStocks, mockPortfolio, INITIAL_BALANCE, type Stock, type Portfolio} from '../fixtures/test-data';
+import {mockStocks, mockPortfolio, type Stock, type Portfolio} from '../fixtures/test-data';
 
 interface TestState {
   stocks: Stock[];

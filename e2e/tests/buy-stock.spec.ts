@@ -11,7 +11,7 @@ test.describe('Покупка акций', () => {
     await dashboardPage.goto();
   });
 
-  test('пользователь покупает акцию и видит обновлённый баланс', async ({page}) => {
+  test('пользователь покупает акцию и видит обновлённый баланс', async () => {
     const stock = getLastStock();
     const quantity = 5;
     const totalCost = stock.currentPrice * quantity;

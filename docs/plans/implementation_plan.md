@@ -299,7 +299,7 @@ e2e/
 
 ---
 
-## Этап 10: CI/CD (1 час)
+## Этап 10: CI/CD (1 час) ✅
 
 ### 10.1 GitHub Actions
 
@@ -309,9 +309,9 @@ e2e/
 
 - `npm run ts`
 - `npm run lint`
-- `npm run build`
 - `npm run test:run`
-- Playwright tests
+- `npm run build`
+- Playwright tests (с сохранением report как artifact)
 
 ---
 
@@ -330,4 +330,4 @@ e2e/
 7. **Widgets** — компоновка entities и features в виджеты
 8. **Pages** — финальная сборка страницы
 9. **Testing** — можно писать параллельно с разработкой
-10. **CI/CD** — финальная настройка
+10. **CI/CD** — финальная настройка ✅
