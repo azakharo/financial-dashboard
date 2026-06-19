@@ -68,6 +68,7 @@ export const StockTableBody = memo(function StockTableBody({
 }: StockTableBodyProps) {
   const parentRef = useRef<HTMLDivElement>(null);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const rowVirtualizer = useVirtualizer({
     count: stocks.length,
     getScrollElement: () => parentRef.current,

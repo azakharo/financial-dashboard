@@ -31,7 +31,7 @@ function toWSPriceUpdate(raw: RawWSPriceUpdate): WSPriceUpdate {
   };
 }
 
-function applyPriceUpdates(
+export function applyPriceUpdates(
   pages: PaginatedResponse<Stock>[] | undefined,
   updates: Map<string, number>,
 ): PaginatedResponse<Stock>[] | undefined {
