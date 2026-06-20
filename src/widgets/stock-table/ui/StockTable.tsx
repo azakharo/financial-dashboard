@@ -1,10 +1,10 @@
 import {Card, CardContent, CardHeader, CardTitle} from '@/shared/ui/card';
+import {Badge} from '@/shared/ui/badge';
 import {useStocks} from '@/entities/stock';
 import {useUIStore} from '@/shared/store';
-import {usePriceFeed, type Stock} from '@/shared/api';
-import {useDebouncedValue} from '@/shared/lib';
+import {SearchInput} from '@/features/search';
+import {SECTORS, type Stock} from '@/shared/api';
 
-import {TableFilters} from './TableFilters';
 import {StockTableBody} from './StockTableBody';
 import {useCallback, useMemo} from 'react';
 
@@ -19,27 +19,19 @@ export function StockTable() {
   const sectorFilter = useUIStore(s => s.sectorFilter);
   const searchQuery = useUIStore(s => s.searchQuery);
   const setSectorFilter = useUIStore(s => s.setSectorFilter);
-  const setSearchQuery = useUIStore(s => s.setSearchQuery);
   const openTradeModal = useUIStore(s => s.openTradeModal);
-
-  const debouncedSearchQuery = useDebouncedValue(searchQuery, 500);
 
   const {data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage} =
     useStocks({
       sector: sectorFilter ?? undefined,
-      search: debouncedSearchQuery || undefined,
+      search: searchQuery || undefined,
     });
-
-  usePriceFeed({
-    sector: sectorFilter ?? undefined,
-    search: debouncedSearchQuery || undefined,
-  });
 
   const stocks = useMemo(() => flattenStocks(data), [data]);
 
   const queryKey = useMemo(
-    () => `${sectorFilter ?? 'all'}-${debouncedSearchQuery ?? ''}`,
-    [sectorFilter, debouncedSearchQuery],
+    () => `${sectorFilter ?? 'all'}-${searchQuery ?? ''}`,
+    [sectorFilter, searchQuery],
   );
 
   const handleSelect = useCallback(
@@ -69,12 +61,28 @@ export function StockTable() {
         <CardTitle>Акции</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <TableFilters
-          sectorFilter={sectorFilter}
-          searchQuery={searchQuery}
-          onSectorChange={setSectorFilter}
-          onSearchChange={setSearchQuery}
-        />
+        <div className="flex flex-col gap-3">
+          <SearchInput />
+          <div className="flex flex-wrap gap-2">
+            <Badge
+              variant={sectorFilter === null ? 'default' : 'outline'}
+              className="cursor-pointer"
+              onClick={() => setSectorFilter(null)}
+            >
+              Все
+            </Badge>
+            {SECTORS.map(sector => (
+              <Badge
+                key={sector}
+                variant={sectorFilter === sector ? 'default' : 'outline'}
+                className="cursor-pointer"
+                onClick={() => setSectorFilter(sector)}
+              >
+                {sector}
+              </Badge>
+            ))}
+          </div>
+        </div>
         <div
           className="
             flex items-center border-b border-gray-200 px-4 py-2 text-sm

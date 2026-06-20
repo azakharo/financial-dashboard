@@ -1,7 +1,7 @@
 import {describe, expect, it, vi, beforeEach, afterEach} from 'vitest';
 import {renderHook} from '@testing-library/react';
 
-import {usePriceFeed} from '@/shared/api/websocket';
+import {usePriceUpdate} from '@/features/price-update';
 import {useUIStore} from '@/shared/store';
 import {createWrapper} from '@/tests/utils';
 
@@ -21,12 +21,14 @@ vi.mock('react-use-websocket', () => ({
   },
 }));
 
-describe('usePriceFeed', () => {
+describe('usePriceUpdate', () => {
   beforeEach(() => {
     mockReadyState.value = 1;
     useUIStore.setState({
       selectedTicker: null,
       chartTimeframe: '1D',
+      sectorFilter: null,
+      searchQuery: '',
     });
   });
 
@@ -36,7 +38,7 @@ describe('usePriceFeed', () => {
 
   it('returns connection status when open', () => {
     mockReadyState.value = 1;
-    const {result} = renderHook(() => usePriceFeed(), {
+    const {result} = renderHook(() => usePriceUpdate(), {
       wrapper: createWrapper(),
     });
 
@@ -45,7 +47,7 @@ describe('usePriceFeed', () => {
 
   it('returns disconnected status when closed', () => {
     mockReadyState.value = 3;
-    const {result} = renderHook(() => usePriceFeed(), {
+    const {result} = renderHook(() => usePriceUpdate(), {
       wrapper: createWrapper(),
     });
 
@@ -54,7 +56,7 @@ describe('usePriceFeed', () => {
 
   it('returns readyState value', () => {
     mockReadyState.value = 1;
-    const {result} = renderHook(() => usePriceFeed(), {
+    const {result} = renderHook(() => usePriceUpdate(), {
       wrapper: createWrapper(),
     });
 
@@ -63,7 +65,7 @@ describe('usePriceFeed', () => {
 
   it('returns CONNECTING status correctly', () => {
     mockReadyState.value = 0;
-    const {result} = renderHook(() => usePriceFeed(), {
+    const {result} = renderHook(() => usePriceUpdate(), {
       wrapper: createWrapper(),
     });
 
