@@ -89,6 +89,8 @@ export function usePriceUpdate() {
             );
           }
         }
+
+        void queryClient.invalidateQueries({queryKey: ['portfolio']});
       }
     };
 
