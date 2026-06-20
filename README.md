@@ -69,8 +69,8 @@ npm run preview
 
 **Решение:**
 
-1. **Буфер + throttle** — обновления собираются в Map, `throttle(2000ms)` применяет разом через `queryClient.setQueryData`
-2. **structuralSharing** — React Query возвращает тот же объект, если изменений нет
+1. **Буфер + throttle** — обновления собираются в Map, deduplicated by ticker, `throttle(2000ms)` применяет разом через `queryClient.setQueryData`
+2. **structuralSharing** — React Query возвращает тот же объект, если изменений нет (это происходит и для stock, и для stock page).
 3. Одна WebSocket-подписка вместо подписок на каждый тикер
 
 ### Виртуализация таблицы
@@ -82,14 +82,4 @@ npm run preview
 
 ## Структура проекта
 
-Feature-Sliced Design (FSD):
-
-```
-src/
-├── app/        # Инициализация приложения
-├── pages/      # Страницы
-├── widgets/    # Виджеты
-├── features/   # Фичи
-├── entities/   # Сущности
-└── shared/     # Общий код
-```
+Feature-Sliced Design (FSD). Подробнее: [ADR — Архитектура FSD](docs/specs/ADR.md#2-архитектура-fsd)
