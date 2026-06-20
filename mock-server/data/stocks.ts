@@ -14,6 +14,7 @@ export interface Stock {
   name: string
   sector: Sector
   currentPrice: number
+  dayInitialPrice: number
   priceChange24h: number
   quantityInPortfolio: number
 }
@@ -52,11 +53,14 @@ export function generateStocks(count: number = 10000): Stock[] {
 
   for (let i = 0; i < count; i++) {
     const ticker = generateTicker(i)
+    const currentPrice = generateRandomPrice()
+    const dayInitialPrice = currentPrice
     stocks.push({
       ticker,
       name: generateCompanyName(ticker, i),
       sector: SECTORS[i % SECTORS.length],
-      currentPrice: generateRandomPrice(),
+      currentPrice,
+      dayInitialPrice,
       priceChange24h: generateRandomChange(),
       quantityInPortfolio: 0,
     })

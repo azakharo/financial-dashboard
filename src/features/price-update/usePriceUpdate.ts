@@ -17,6 +17,7 @@ const THROTTLE_MS = 2000;
 interface RawWSPriceUpdate {
   ticker: string;
   price: number;
+  priceChange24h?: number;
   timestamp: string;
 }
 
@@ -28,6 +29,7 @@ function toWSPriceUpdate(raw: RawWSPriceUpdate): WSPriceUpdate {
   return {
     ticker: raw.ticker,
     price: raw.price,
+    priceChange24h: raw.priceChange24h,
     timestamp: new Date(raw.timestamp),
   };
 }
@@ -43,7 +45,12 @@ export function usePriceUpdate() {
       bufferRef.current.clear();
 
       if (updates.length > 0) {
-        const priceMap = new Map(updates.map(u => [u.ticker, u.price]));
+        const priceMap = new Map(
+          updates.map(u => [
+            u.ticker,
+            {price: u.price, priceChange24h: u.priceChange24h},
+          ]),
+        );
 
         const {sectorFilter, searchQuery} = useUIStore.getState();
 

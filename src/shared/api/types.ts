@@ -38,6 +38,7 @@ export interface Portfolio {
 export interface WSPriceUpdate {
   ticker: string;
   price: number;
+  priceChange24h?: number;
   timestamp: Date;
 }
 

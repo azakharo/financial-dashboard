@@ -38,7 +38,7 @@ describe('applyPriceUpdates', () => {
     const pages = [
       createPage([createStock({ticker: 'AAPL', currentPrice: 150})]),
     ];
-    const updates = new Map([['GOOG', 100]]);
+    const updates = new Map([['GOOG', {price: 100}]]);
     const result = applyPriceUpdates(pages, updates);
     expect(result).toBe(pages);
   });
@@ -47,7 +47,18 @@ describe('applyPriceUpdates', () => {
     const pages = [
       createPage([createStock({ticker: 'AAPL', currentPrice: 150})]),
     ];
-    const updates = new Map([['AAPL', 150]]);
+    const updates = new Map([['AAPL', {price: 150}]]);
+    const result = applyPriceUpdates(pages, updates);
+    expect(result).toBe(pages);
+  });
+
+  it('returns same pages object when priceChange24h is unchanged', () => {
+    const pages = [
+      createPage([
+        createStock({ticker: 'AAPL', currentPrice: 150, priceChange24h: 2.5}),
+      ]),
+    ];
+    const updates = new Map([['AAPL', {price: 150, priceChange24h: 2.5}]]);
     const result = applyPriceUpdates(pages, updates);
     expect(result).toBe(pages);
   });
@@ -56,10 +67,37 @@ describe('applyPriceUpdates', () => {
     const pages = [
       createPage([createStock({ticker: 'AAPL', currentPrice: 150})]),
     ];
-    const updates = new Map([['AAPL', 155]]);
+    const updates = new Map([['AAPL', {price: 155}]]);
     const result = applyPriceUpdates(pages, updates);
     expect(result).not.toBe(pages);
     expect(result![0].stocks[0].currentPrice).toBe(155);
+    expect(result![0].stocks[0].priceChange24h).toBe(2.5);
+  });
+
+  it('returns new pages with updated priceChange24h', () => {
+    const pages = [
+      createPage([
+        createStock({ticker: 'AAPL', currentPrice: 150, priceChange24h: 2.5}),
+      ]),
+    ];
+    const updates = new Map([['AAPL', {price: 150, priceChange24h: 3.5}]]);
+    const result = applyPriceUpdates(pages, updates);
+    expect(result).not.toBe(pages);
+    expect(result![0].stocks[0].currentPrice).toBe(150);
+    expect(result![0].stocks[0].priceChange24h).toBe(3.5);
+  });
+
+  it('updates both price and priceChange24h', () => {
+    const pages = [
+      createPage([
+        createStock({ticker: 'AAPL', currentPrice: 150, priceChange24h: 2.5}),
+      ]),
+    ];
+    const updates = new Map([['AAPL', {price: 155, priceChange24h: 3.5}]]);
+    const result = applyPriceUpdates(pages, updates);
+    expect(result).not.toBe(pages);
+    expect(result![0].stocks[0].currentPrice).toBe(155);
+    expect(result![0].stocks[0].priceChange24h).toBe(3.5);
   });
 
   it('updates multiple stocks in same page', () => {
@@ -67,13 +105,15 @@ describe('applyPriceUpdates', () => {
     const goog = createStock({ticker: 'GOOG', currentPrice: 100});
     const pages = [createPage([aapl, goog])];
     const updates = new Map([
-      ['AAPL', 155],
-      ['GOOG', 105],
+      ['AAPL', {price: 155}],
+      ['GOOG', {price: 105, priceChange24h: 1.5}],
     ]);
     const result = applyPriceUpdates(pages, updates);
     expect(result).not.toBe(pages);
     expect(result![0].stocks[0].currentPrice).toBe(155);
+    expect(result![0].stocks[0].priceChange24h).toBe(2.5);
     expect(result![0].stocks[1].currentPrice).toBe(105);
+    expect(result![0].stocks[1].priceChange24h).toBe(1.5);
   });
 
   it('updates stocks across multiple pages', () => {
@@ -85,8 +125,8 @@ describe('applyPriceUpdates', () => {
     ]);
     const pages = [page1, page2];
     const updates = new Map([
-      ['AAPL', 155],
-      ['GOOG', 105],
+      ['AAPL', {price: 155}],
+      ['GOOG', {price: 105}],
     ]);
     const result = applyPriceUpdates(pages, updates);
     expect(result).not.toBe(pages);
@@ -98,7 +138,7 @@ describe('applyPriceUpdates', () => {
     const aapl = createStock({ticker: 'AAPL', currentPrice: 150});
     const goog = createStock({ticker: 'GOOG', currentPrice: 100});
     const pages = [createPage([aapl, goog])];
-    const updates = new Map([['AAPL', 155]]);
+    const updates = new Map([['AAPL', {price: 155}]]);
     const result = applyPriceUpdates(pages, updates);
     expect(result![0].stocks[0]).not.toBe(aapl);
     expect(result![0].stocks[1]).toBe(goog);
@@ -112,7 +152,7 @@ describe('applyPriceUpdates', () => {
       createStock({ticker: 'GOOG', currentPrice: 100}),
     ]);
     const pages = [page1, page2];
-    const updates = new Map([['AAPL', 155]]);
+    const updates = new Map([['AAPL', {price: 155}]]);
     const result = applyPriceUpdates(pages, updates);
     expect(result![0]).not.toBe(page1);
     expect(result![1]).toBe(page2);

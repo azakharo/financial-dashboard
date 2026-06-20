@@ -9,6 +9,7 @@ const isSingleStockPriceUpdate = true
 export interface WSPriceUpdate {
   ticker: string
   price: number
+  priceChange24h: number
   timestamp: string
 }
 
@@ -58,9 +59,14 @@ export class PriceBroadcaster {
         stock.currentPrice = 0.01
       }
 
+      stock.priceChange24h = Math.round(
+        ((stock.currentPrice - stock.dayInitialPrice) / stock.dayInitialPrice) * 100 * 100
+      ) / 100
+
       const update: WSPriceUpdate = {
         ticker: stock.ticker,
         price: stock.currentPrice,
+        priceChange24h: stock.priceChange24h,
         timestamp: new Date().toISOString(),
       }
 
@@ -78,9 +84,14 @@ export class PriceBroadcaster {
           stock.currentPrice = 0.01
         }
 
+        stock.priceChange24h = Math.round(
+          ((stock.currentPrice - stock.dayInitialPrice) / stock.dayInitialPrice) * 100 * 100
+        ) / 100
+
         const update: WSPriceUpdate = {
           ticker: stock.ticker,
           price: stock.currentPrice,
+          priceChange24h: stock.priceChange24h,
           timestamp: new Date().toISOString(),
         }
 
