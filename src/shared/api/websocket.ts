@@ -18,20 +18,14 @@ export function applyPriceUpdates(
 
     const newStocks = page.stocks.map(stock => {
       const update = updates.get(stock.ticker);
-      if (update === undefined) return stock;
-
-      const priceChanged = update.price !== stock.currentPrice;
-      const changeChanged =
-        update.priceChange24h !== undefined &&
-        update.priceChange24h !== stock.priceChange24h;
-
-      if (!priceChanged && !changeChanged) return stock;
+      if (update === undefined || update.price === stock.currentPrice)
+        return stock;
 
       pageHasChanges = true;
       return {
         ...stock,
-        ...(priceChanged && {currentPrice: update.price}),
-        ...(changeChanged && {priceChange24h: update.priceChange24h}),
+        currentPrice: update.price,
+        priceChange24h: update.priceChange24h ?? 0,
       };
     });
 
