@@ -32,7 +32,7 @@ describe('SearchInput', () => {
     expect(input).toHaveValue('AAP');
   });
 
-  it('записывает debounced value в store после задержки', async () => {
+  it('записывает debounced value в store после задержки', () => {
     render(<SearchInput />);
 
     const input = screen.getByPlaceholderText(/поиск по тикеру или названию/i);
@@ -40,14 +40,14 @@ describe('SearchInput', () => {
 
     expect(useUIStore.getState().searchQuery).toBe('');
 
-    await act(async () => {
+    act(() => {
       vi.advanceTimersByTime(500);
     });
 
     expect(useUIStore.getState().searchQuery).toBe('AAP');
   });
 
-  it('отменяет предыдущий debounce при быстром вводе', async () => {
+  it('отменяет предыдущий debounce при быстром вводе', () => {
     render(<SearchInput />);
 
     const input = screen.getByPlaceholderText(/поиск по тикеру или названию/i);
@@ -60,7 +60,7 @@ describe('SearchInput', () => {
 
     expect(useUIStore.getState().searchQuery).toBe('');
 
-    await act(async () => {
+    act(() => {
       vi.advanceTimersByTime(500);
     });
 
