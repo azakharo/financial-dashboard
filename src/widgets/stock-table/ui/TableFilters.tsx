@@ -1,3 +1,4 @@
+import {memo} from 'react';
 import {Search} from 'lucide-react';
 
 import {Input} from '@/shared/ui/input';
@@ -11,7 +12,7 @@ interface TableFiltersProps {
   onSearchChange: (query: string) => void;
 }
 
-export function TableFilters({
+export const TableFilters = memo(function TableFilters({
   sectorFilter,
   searchQuery,
   onSectorChange,
@@ -54,4 +55,4 @@ export function TableFilters({
       </div>
     </div>
   );
-}
+});
