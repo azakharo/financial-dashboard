@@ -19,12 +19,14 @@ const emit = defineEmits<{
 
 const parentRef = ref<HTMLElement | null>(null);
 
-const rowVirtualizer = useVirtualizer({
-  count: computed(() => props.stocks.length),
-  getScrollElement: () => parentRef.value,
-  estimateSize: () => 48,
-  overscan: 10,
-});
+const rowVirtualizer = useVirtualizer(
+  computed(() => ({
+    count: props.stocks.length,
+    getScrollElement: () => parentRef.value,
+    estimateSize: () => 48,
+    overscan: 10,
+  })),
+);
 
 watch(
   () => props.queryKey,
