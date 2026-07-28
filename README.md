@@ -1,6 +1,6 @@
 # Financial Dashboard
 
-SPA на React для отслеживания портфеля финансовых активов в реальном времени.
+SPA на Vue 3 для отслеживания портфеля финансовых активов в реальном времени.
 
 ## Требования
 
@@ -8,14 +8,16 @@ SPA на React для отслеживания портфеля финансов
 
 ## Технологический стек
 
-- [React](https://react.dev/) 19 + TypeScript
+- [Vue](https://vuejs.org/) 3 (Composition API, `<script setup>`) + TypeScript
 - [Vite](https://vitejs.dev/) + Tailwind CSS
-- [shadcn/ui](https://ui.shadcn.com/) (radix-nova style)
-- [Tanstack Query](https://tanstack.com/query) — серверное состояние
-- [Zustand](https://zustand-demo.pmnd.rs/) — клиентское состояние
-- [Recharts](https://recharts.org/) — графики
-- [@tanstack/react-virtual](https://tanstack.com/virtual) — виртуализация таблицы
+- [shadcn-vue](https://www.shadcn-vue.com/) (reka-ui)
+- [@tanstack/vue-query](https://tanstack.com/query) — серверное состояние
+- [Pinia](https://pinia.vuejs.org/) — клиентское состояние
+- [vue3-apexcharts](https://apexcharts.com/docs/vue-charts/) — графики
+- [@tanstack/vue-virtual](https://tanstack.com/virtual) — виртуализация таблицы
 - [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/) — тестирование
+
+Подробнее: [`docs/specs/ADR.md`](docs/specs/ADR.md).
 
 ## Запуск проекта
 
@@ -58,10 +60,10 @@ npm run preview
 
 Разделение ответственности:
 
-- **Tanstack Query** — серверное состояние (акции, портфель, история цен). Кеширование, invalidation, бесконечный скролл.
-- **Zustand** — клиентское состояние (selectedTicker, модальные окна, фильтры).
+- **@tanstack/vue-query** — серверное состояние (акции, портфель, история цен). Кеширование, invalidation, бесконечный скролл.
+- **Pinia** — клиентское состояние (selectedTicker, модальные окна, фильтры).
 
-**Обоснование:** Tanstack Query даёт кеширование и работу с серверными данными из коробки. Zustand минимален для UI state.
+**Обоснование:** @tanstack/vue-query даёт кеширование и работу с серверными данными из коробки. Pinia — официальный store для Vue 3.
 
 ### Производительность WebSocket
 
@@ -70,15 +72,15 @@ npm run preview
 **Решение:**
 
 1. **Буфер + throttle** — обновления собираются в Map, deduplicated by ticker, `throttle(2000ms)` применяет разом через `queryClient.setQueryData`
-2. **structuralSharing** — React Query возвращает тот же объект, если изменений нет (это происходит и для stock, и для stock page).
+2. **structuralSharing** — Vue Query возвращает тот же объект, если изменений нет.
 3. Одна WebSocket-подписка вместо подписок на каждый тикер
 
 ### Виртуализация таблицы
 
-**@tanstack/react-virtual:**
+**@tanstack/vue-virtual:**
 
 - Рендер только видимых строк (50-100 из 10000+, overscan: 10)
-- `VirtualizedRow` обёрнут в `React.memo` для предотвращения лишних ре-рендеров
+- Vue реактивность обеспечивает минимальные ре-рендеры
 
 ## Структура проекта
 

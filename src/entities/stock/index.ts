@@ -6,4 +6,3 @@ export {
   selectStocksSortedByTicker,
   selectStocksSortedByPrice,
 } from './model';
-export {StockRow} from './ui/StockRow';

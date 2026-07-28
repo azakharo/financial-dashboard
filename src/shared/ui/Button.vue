@@ -1,8 +1,39 @@
-import * as React from 'react';
-import {cva, type VariantProps} from 'class-variance-authority';
-import {Slot} from 'radix-ui';
+<script setup lang="ts">
+import {computed} from 'vue';
+import {cva} from 'class-variance-authority';
 
 import {cn} from '@/shared/lib';
+
+const props = withDefaults(
+  defineProps<{
+    variant?:
+      | 'default'
+      | 'outline'
+      | 'secondary'
+      | 'ghost'
+      | 'destructive'
+      | 'link';
+    size?:
+      | 'default'
+      | 'xs'
+      | 'sm'
+      | 'lg'
+      | 'icon'
+      | 'icon-xs'
+      | 'icon-sm'
+      | 'icon-lg';
+    asChild?: boolean;
+    class?: string;
+    disabled?: boolean;
+  }>(),
+  {
+    variant: 'default',
+    size: 'default',
+    asChild: false,
+    class: undefined,
+    disabled: false,
+  },
+);
 
 const buttonVariants = cva(
   `
@@ -101,27 +132,21 @@ const buttonVariants = cva(
   },
 );
 
-function Button({
-  className,
-  variant = 'default',
-  size = 'default',
-  asChild = false,
-  ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  }) {
-  const Comp = asChild ? Slot.Root : 'button';
+const classes = computed(() =>
+  cn(buttonVariants({variant: props.variant, size: props.size}), props.class),
+);
+</script>
 
-  return (
-    <Comp
-      data-slot="button"
-      data-variant={variant}
-      data-size={size}
-      className={cn(buttonVariants({variant, size, className}))}
-      {...props}
-    />
-  );
-}
-
-export {Button, buttonVariants};
+<template>
+  <button
+    v-if="!asChild"
+    :class="classes"
+    :disabled="disabled"
+    data-slot="button"
+    :data-variant="variant"
+    :data-size="size"
+  >
+    <slot />
+  </button>
+  <slot v-else :class="classes" />
+</template>

@@ -1,1 +1,1 @@
-export {StockChart} from './ui/StockChart';
+export {default as StockChart} from './ui/StockChart.vue';

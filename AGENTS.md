@@ -1,27 +1,31 @@
 # AGENTS.md
 
-SPA на React.js — Financial Dashboard.
+SPA на Vue.js — Financial Dashboard.
 
 ## Стек
 
-React 19, TypeScript, Vite, Tailwind CSS, shadcn/ui (radix-nova style).
+Vue 3 (Composition API, `<script setup>`), TypeScript, Vite, Tailwind CSS, shadcn-vue (reka-ui).
+
+Подробнее: `docs/specs/ADR.md#1-технологический-стек`.
 
 ### Ключевые библиотеки
 
-- **Состояние:** Tanstack Query (серверное), Zustand (клиентское)
-- **UI:** shadcn/ui, Recharts (графики), @tanstack/react-virtual (виртуализация)
-- **Сеть:** ky (HTTP), react-use-websocket (WebSocket)
+- **Состояние:** @tanstack/vue-query (серверное), Pinia (клиентское)
+- **UI:** shadcn-vue, vue3-apexcharts (графики), @tanstack/vue-virtual (виртуализация)
+- **Сеть:** ky (HTTP), @vueuse/core useWebSocket (WebSocket)
 - **Утилиты:** date-fns (даты), lodash (throttle/batch)
 
 ## Команды
 
-- `npm run dev` — dev server на http://localhost:5173. Только пользователь может запускать. ИИ агент не запускат.
-- `npm run dev:server` — mock-сервер (REST + WebSocket). Только пользователь может запускать. ИИ агент не запускат.
-- `npm run dev:all` — mock-сервер + Vite параллельно. Только пользователь может запускать. ИИ агент не запускат.
+- `npm run dev` — dev server на http://localhost:5173. Только пользователь может запускать. ИИ агент не запускает.
+- `npm run dev:server` — mock-сервер (REST + WebSocket). Только пользователь может запускать. ИИ агент не запускает.
+- `npm run dev:all` — mock-сервер + Vite параллельно. Только пользователь может запускать. ИИ агент не запускает.
 - `npm run build` — production build в `dist/`
-- `npm run ts` — typecheck
+- `npm run ts` — typecheck (vue-tsc)
 - `npm run lint` — ESLint + Prettier автофикс
 - `npm run check:server` — проверка mock-сервера
+- `npm run test:run` — запуск unit тестов
+- `npm run test:e2e` — запуск E2E тестов
 
 ## Архитектура
 
@@ -38,12 +42,19 @@ src/
 ```
 
 - Path alias: `@/*` → `src/*` (configured in tsconfig + vite)
-- Вход: `src/main.tsx` → `src/App.tsx`
+- Вход: `src/main.ts` → `src/App.vue`
 
-## shadcn/ui
+## Vue правила
 
-Стиль: `radix-nova`. Добавление компонента:
+- Использовать `<script setup lang="ts">` для всех SFC компонентов
+- Использовать `defineProps<T>()` и `defineEmits<T>()` с type-only интерфейсами
+- Файлы компонентов именуются в PascalCase, идентично названию экспортируемого компонента
+- Для тестов компонентов использовать `@testing-library/vue`
+
+## shadcn-vue
+
+Стиль: `default`. Добавление компонента:
 
 ```sh
-npx shadcn add <component>
+npx shadcn-vue@latest add <component>
 ```

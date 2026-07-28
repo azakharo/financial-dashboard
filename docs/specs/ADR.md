@@ -6,23 +6,23 @@
 
 | Компонент    | Решение           | Обоснование                           |
 | ------------ | ----------------- | ------------------------------------- |
-| React        | 19                | Указано в AGENTS.md                   |
+| Vue          | 3 (Composition API, `<script setup>`) | Миграция с React 19 |
 | TypeScript   | Строгая типизация | Требование PRD, без `any`             |
 | Vite         | Сборщик           | Требование PRD                        |
 | Tailwind CSS | Стилизация        | Требование PRD                        |
-| shadcn/ui    | UI компоненты     | Указано в AGENTS.md, radix-nova style |
+| shadcn-vue   | UI компоненты     | reka-ui (radix-nova style)            |
 
 ### 1.2 Библиотеки
 
 | Назначение                     | Библиотека              | Обоснование                                                                |
 | ------------------------------ | ----------------------- | -------------------------------------------------------------------------- |
 | HTTP клиент                    | ky                      | Легковесный (5KB), удобный API для JSON, тайпинфы из коробки               |
-| Управление состоянием (server) | Tanstack Query v5       | Кеширование, рефетчинг, бесконечный скролл, интеграция с WebSocket         |
-| Управление состоянием (client) | Zustand                 | Требование PRD. UI state: selectedTicker, modalState, filters, searchQuery |
-| Виртуализация таблицы          | @tanstack/react-virtual | Гибкий headless подход, совместимость с Tanstack Query                     |
-| Графики                        | Recharts                | Указано пользователем. Поддержка анимации через `isAnimationActive`        |
+| Управление состоянием (server) | @tanstack/vue-query     | Кеширование, рефетчинг, бесконечный скролл, интеграция с WebSocket         |
+| Управление состоянием (client) | pinia (setup stores)    | Официальный store для Vue 3. UI state: selectedTicker, modalState, filters, searchQuery |
+| Виртуализация таблицы          | @tanstack/vue-virtual   | Гибкий headless подход, совместимость с Vue Query                     |
+| Графики                        | vue3-apexcharts         | Декларативный API, кастомный tooltip, градиент через fill.gradient        |
 | Работа с датами                | date-fns                | Указано в react_rules.md                                                   |
-| WebSocket                      | react-use-websocket     | React hook API, авто-реконнект, share-режим, message queue                 |
+| WebSocket                      | @vueuse/core useWebSocket | Idiomatic Vue, авто-реконнект, авто-cleanup через tryOnScopeDispose                 |
 | Throttle/batch обновлений      | lodash                  | Проверенная реализация, tree-shaking                                       |
 
 ---
@@ -32,7 +32,6 @@
 ```
 src/
 ├── app/                     # Инициализация приложения
-│   ├── providers/          # React Query, Theme провайдеры
 │   └── router/             # Маршрутизация
 ├── pages/
 │   └── dashboard/          # Главная страница
@@ -46,7 +45,7 @@ src/
 │   ├── portfolio/          # Сущность портфеля
 │   └── price-history/      # Сущность истории цен
 └── shared/
-    ├── ui/                 # shadcn компоненты
+    ├── ui/                 # shadcn-vue компоненты
     ├── api/                # API клиент, WebSocket менеджер
     └── lib/                # Утилиты, форматтеры
 ```
@@ -57,33 +56,52 @@ src/
 
 ### 3.1 Разделение ответственности
 
-**Tanstack Query — серверное состояние:**
+**@tanstack/vue-query — серверное состояние:**
 
 - Данные акций (постраничная загрузка)
 - Исторические данные для графиков
 - Данные портфеля
 - WebSocket обновления через `queryClient.setQueryData`
 
-**Zustand — клиентское состояние:**
+**pinia — клиентское состояние:**
 
 ```typescript
-interface UIState {
-  selectedTicker: string | null;
-  tradeModalOpen: boolean;
-  tradeModalTicker: string | null;
-  tradeModalMode: 'buy' | 'sell';
-  sectorFilter: string | null;
-  searchQuery: string;
-  chartTimeframe: '1D' | '1W' | '1M' | '1Y';
-}
+export const useUIStore = defineStore('ui', () => {
+  const selectedTicker = ref<string | null>(null);
+  const tradeModalOpen = ref(false);
+  const tradeModalTicker = ref<string | null>(null);
+  const tradeModalMode = ref<TradeMode>('buy');
+  const sectorFilter = ref<Sector | null>(null);
+  const searchQuery = ref('');
+  const chartTimeframe = ref<Timeframe>('1D');
+
+  // ... actions
+
+  return {
+    selectedTicker,
+    tradeModalOpen,
+    tradeModalTicker,
+    tradeModalMode,
+    sectorFilter,
+    searchQuery,
+    chartTimeframe,
+    setSelectedTicker,
+    openTradeModal,
+    closeTradeModal,
+    setSectorFilter,
+    setSearchQuery,
+    setChartTimeframe,
+    $reset,
+  };
+});
 ```
 
-### 3.2 Интеграция WebSocket с React Query
+### 3.2 Интеграция WebSocket с Vue Query
 
 ```
 WebSocket (50ms) → Buffer → Throttle (2000ms) → queryClient.setQueryData
                                                               ↓
-                                          React Query cache update
+                                          Vue Query cache update
                                                               ↓
                                           Компоненты (через useQuery)
 ```
@@ -91,7 +109,7 @@ WebSocket (50ms) → Buffer → Throttle (2000ms) → queryClient.setQueryData
 **Ключевые оптимизации:**
 
 - Батчинг обновлений: собираем обновления за 2000ms, применяем разом
-- `structuralSharing: true` в React Query — минимизация ре-рендеров
+- `structuralSharing: true` в Vue Query — минимизация ре-рендеров
 - Виртуализация — рендер только видимых строк
 
 ---
@@ -109,43 +127,41 @@ WebSocket (50ms) → Buffer → Throttle (2000ms) → queryClient.setQueryData
 - Реальный бэкенд может не поддерживать подписку на конкретные тикеры
 - Клиентский батчинг обеспечивает 60 FPS
 
-**Отступление от PRD:** PRD упоминает "WebSocket-подписки" (множественное число). Мы используем одну подписку как более простое и надёжное решение.
-
 ### 4.2 Управление соединением
 
-**react-use-websocket hook:**
+**@vueuse/core useWebSocket:**
 
 ```typescript
-const {lastMessage, readyState, sendJsonMessage} = useWebSocket(WS_URL, {
-  share: true,
-  shouldReconnect: () => true,
-  reconnectInterval: 3000,
-  reconnectAttempts: 10,
-  onOpen: () => console.log('Connected'),
-  onClose: () => console.log('Disconnected'),
+const {status} = useWebSocket(WS_URL, {
+  autoReconnect: {
+    retries: 10,
+    delay: 3000,
+  },
+  onMessage: (ws, event) => {
+    // handle message
+  },
 });
 
-const isReady = readyState === ReadyState.OPEN;
+const isConnected = computed(() => status.value === 'OPEN');
 ```
 
 **Throttle + Buffer паттерн:**
 
 ```typescript
-const buffer = useRef<Map<string, WSPriceUpdate>>(new Map());
+const buffer = new Map<string, WSPriceUpdate>();
 
-const throttledFlush = throttle(() => {
-  const updates = Array.from(buffer.current.values());
-  buffer.current.clear();
-  queryClient.setQueryData(['stocks'], (old: Stock[]) =>
-    applyUpdates(old, updates),
-  );
-}, 2000);
+const throttledFlush = throttle(flush, 2000, {
+  leading: false,
+  trailing: true,
+});
 
-const handleMessage = (message: MessageEvent) => {
-  const update = JSON.parse(message.data);
-  buffer.current.set(update.ticker, update);
+function handleMessage(event: MessageEvent) {
+  const updates = JSON.parse(event.data);
+  for (const update of updates) {
+    buffer.set(update.ticker, toWSPriceUpdate(update));
+  }
   throttledFlush();
-};
+}
 ```
 
 ---
@@ -246,19 +262,13 @@ interface WSPriceUpdate {
 | Уровень         | Инструмент             | Подход                                            |
 | --------------- | ---------------------- | ------------------------------------------------- |
 | Unit            | Vitest + vi.fn()       | Хуки, утилиты, selectors — прямой мок queryClient |
-| Integration     | Vitest + RTL + MSW     | Компоненты — мок REST через MSW                   |
+| Integration     | Vitest + @testing-library/vue     | Компоненты — мок REST через MSW                   |
 | WebSocket тесты | Vitest + MockWebSocket | Кастомный класс для мокирования WebSocket         |
 | E2E             | Playwright             | Page Object Model, мок через page.route()         |
 
 ### 7.2 Покрытие
 
 **Цель:** минимум 85% для бизнес-логики.
-
-**Обязательные тесты:**
-
-- Кастомный хук WebSocket подписки (с мокированием WS)
-- Форма покупки акции: валидация баланса, вызов транзакции
-- E2E сценарий: вход → выбор акции → покупка → проверка баланса
 
 ---
 
@@ -284,3 +294,29 @@ server: {
 ```
 
 **Частота обновлений WebSocket:** каждые 50ms для тестирования производительности.
+
+---
+
+## 9. ADR: Миграция React 19 → Vue 3
+
+**Дата:** 2026-07-28
+
+**Решение:** Полная миграция SPA «Financial Dashboard» с React 19 на Vue 3 (Composition API, `<script setup>`).
+
+**Обоснование:**
+- Унификация стека с другими проектами команды
+- Упрощение архитектуры за счет нативной реактивности Vue
+- Pinia как более идиоматичный solution для Vue
+
+**Ключевые изменения:**
+- React 19 → Vue 3.5
+- Zustand → Pinia (setup stores)
+- @tanstack/react-query → @tanstack/vue-query
+- react-use-websocket → @vueuse/core useWebSocket
+- Recharts → vue3-apexcharts
+- radix-ui → reka-ui (через shadcn-vue)
+
+**Результат:**
+- TypeScript проверка: ✅
+- ESLint: ✅
+- Production build: ✅

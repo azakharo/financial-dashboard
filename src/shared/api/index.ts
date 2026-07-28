@@ -1,5 +1,6 @@
 export * from './types';
-export * from './client';
-export * from './stocks';
-export * from './portfolio';
-export * from './websocket';
+export {apiClient} from './client';
+export {getStocks, getStockHistory} from './stocks';
+export {getPortfolio, buyStock, sellStock} from './portfolio';
+export {applyPriceUpdates} from './websocket';
+export type {GetStocksParams} from './stocks';

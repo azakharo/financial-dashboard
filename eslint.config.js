@@ -1,63 +1,44 @@
 import js from '@eslint/js';
 import globals from 'globals';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import {defineConfig, globalIgnores} from 'eslint/config';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
-import reactCompiler from 'eslint-plugin-react-compiler';
 import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss';
+import eslintPluginVue from 'eslint-plugin-vue';
 
 export default defineConfig([
   globalIgnores(['dist']),
   {
-    files: ['./src/**/*.{ts,tsx}', './eslint.config.js', './vite.config.js'],
+    files: ['./src/**/*.{ts,vue}', './eslint.config.js', './vite.config.js'],
     extends: [
       js.configs.recommended,
-      tseslint.configs.recommendedTypeChecked,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-      reactX.configs['recommended-typescript'],
-      reactDom.configs.recommended,
+      ...tseslint.configs.recommended,
+      ...eslintPluginVue.configs['flat/recommended'],
       eslintPluginPrettierRecommended,
       eslintPluginBetterTailwindcss.configs.recommended,
     ],
-    plugins: {
-      'react-compiler': reactCompiler,
-    },
     languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        parser: tseslint.parser,
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+        extraFileExtensions: ['.vue'],
+      },
     },
     rules: {
-      'react-compiler/react-compiler': 'warn',
-      'react-refresh/only-export-components': [
-        'warn',
-        {allowConstantExport: true},
-      ],
-      'better-tailwindcss/enforce-consistent-line-wrapping': [
+      'vue/multi-word-component-names': 'off',
+      '@typescript-eslint/no-unused-vars': [
         'error',
-        {
-          strictness: 'loose',
-        },
+        {argsIgnorePattern: '^_', varsIgnorePattern: '^_'},
       ],
+      'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
     },
     settings: {
       'better-tailwindcss': {
         entryPoint: 'src/index.css',
       },
-    },
-  },
-  {
-    files: ['./src/shared/ui/**/*.{ts,tsx}'],
-    rules: {
-      'react-refresh/only-export-components': 'off',
     },
   },
 ]);

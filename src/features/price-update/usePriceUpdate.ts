@@ -1,7 +1,7 @@
-import {useRef, useEffect, useCallback} from 'react';
-import useWebSocket, {ReadyState} from 'react-use-websocket';
+import {ref, onUnmounted, computed} from 'vue';
+import {useWebSocket} from '@vueuse/core';
 import {throttle} from 'lodash';
-import {useQueryClient, type InfiniteData} from '@tanstack/react-query';
+import {useQueryClient, type InfiniteData} from '@tanstack/vue-query';
 import type {
   Stock,
   WSPriceUpdate,
@@ -36,105 +36,103 @@ function toWSPriceUpdate(raw: RawWSPriceUpdate): WSPriceUpdate {
 
 export function usePriceUpdate() {
   const queryClient = useQueryClient();
-  const bufferRef = useRef(new Map<string, WSPriceUpdate>());
-  const throttledFlushRef = useRef<ReturnType<typeof throttle> | null>(null);
+  const buffer = new Map<string, WSPriceUpdate>();
+  const throttledFlush = ref<ReturnType<typeof throttle> | null>(null);
 
-  useEffect(() => {
-    const flush = () => {
-      const updates = Array.from(bufferRef.current.values());
-      bufferRef.current.clear();
+  const uiStore = useUIStore();
 
-      if (updates.length > 0) {
-        const priceMap = new Map(
-          updates.map(u => [
-            u.ticker,
-            {price: u.price, priceChange24h: u.priceChange24h},
-          ]),
-        );
+  const flush = () => {
+    const updates = Array.from(buffer.values());
+    buffer.clear();
 
-        const {sectorFilter, searchQuery} = useUIStore.getState();
+    if (updates.length > 0) {
+      const priceMap = new Map(
+        updates.map(u => [
+          u.ticker,
+          {price: u.price, priceChange24h: u.priceChange24h},
+        ]),
+      );
 
-        queryClient.setQueryData(
-          [
-            'stocks',
-            {
-              sector: sectorFilter ?? undefined,
-              search: searchQuery || undefined,
-            },
-          ],
-          (old: InfiniteData<PaginatedResponse<Stock>> | undefined) => {
-            if (!old) return old;
-            const newPages = applyPriceUpdates(old.pages, priceMap);
-            if (newPages === old.pages) return old;
-            return {...old, pages: newPages};
+      const sectorFilter = uiStore.sectorFilter;
+      const searchQuery = uiStore.searchQuery;
+
+      queryClient.setQueryData(
+        [
+          'stocks',
+          {
+            sector: sectorFilter ?? undefined,
+            search: searchQuery || undefined,
           },
-        );
+        ],
+        (old: InfiniteData<PaginatedResponse<Stock>> | undefined) => {
+          if (!old) return old;
+          const newPages = applyPriceUpdates(old.pages, priceMap);
+          if (newPages === old.pages) return old;
+          return {...old, pages: newPages};
+        },
+      );
 
-        const {selectedTicker, chartTimeframe} = useUIStore.getState();
-        if (selectedTicker && chartTimeframe === '1D') {
-          const chartUpdate = updates.find(u => u.ticker === selectedTicker);
-          if (chartUpdate) {
-            queryClient.setQueryData(
-              ['stockHistory', selectedTicker, '1D'],
-              (old: PricePoint[] | undefined) => {
-                if (!old || old.length === 0) return old;
-                const lastPoint = old[old.length - 1];
-                if (
-                  chartUpdate.timestamp.getTime() >
-                  lastPoint.timestamp.getTime()
-                ) {
-                  return [
-                    ...old,
-                    {
-                      timestamp: chartUpdate.timestamp,
-                      price: chartUpdate.price,
-                    },
-                  ];
-                }
-                return old;
-              },
-            );
-          }
+      const selectedTicker = uiStore.selectedTicker;
+      const chartTimeframe = uiStore.chartTimeframe;
+      if (selectedTicker && chartTimeframe === '1D') {
+        const chartUpdate = updates.find(u => u.ticker === selectedTicker);
+        if (chartUpdate) {
+          queryClient.setQueryData(
+            ['stockHistory', selectedTicker, '1D'],
+            (old: PricePoint[] | undefined) => {
+              if (!old || old.length === 0) return old;
+              const lastPoint = old[old.length - 1];
+              if (
+                chartUpdate.timestamp.getTime() > lastPoint.timestamp.getTime()
+              ) {
+                return [
+                  ...old,
+                  {
+                    timestamp: chartUpdate.timestamp,
+                    price: chartUpdate.price,
+                  },
+                ];
+              }
+              return old;
+            },
+          );
         }
-
-        void queryClient.invalidateQueries({queryKey: ['portfolio']});
       }
-    };
 
-    throttledFlushRef.current = throttle(flush, THROTTLE_MS, {
-      leading: false,
-      trailing: true,
-    });
-
-    return () => {
-      throttledFlushRef.current?.cancel();
-      throttledFlushRef.current = null;
-    };
-  }, [queryClient]);
-
-  const handleMessage = useCallback((event: MessageEvent) => {
-    try {
-      const rawUpdates = parseWSMessage(event.data as string);
-      for (const raw of rawUpdates) {
-        const update = toWSPriceUpdate(raw);
-        bufferRef.current.set(update.ticker, update);
-      }
-      throttledFlushRef.current?.();
-    } catch {
-      console.error('Failed to parse WS message');
+      void queryClient.invalidateQueries({queryKey: ['portfolio']});
     }
-  }, []);
+  };
 
-  const {readyState} = useWebSocket(WS_URL, {
-    share: true,
-    shouldReconnect: () => true,
-    reconnectInterval: 3000,
-    reconnectAttempts: 10,
-    filter: () => false,
-    onMessage: handleMessage,
+  throttledFlush.value = throttle(flush, THROTTLE_MS, {
+    leading: false,
+    trailing: true,
   });
 
-  const isConnected = readyState === ReadyState.OPEN;
+  onUnmounted(() => {
+    throttledFlush.value?.cancel();
+  });
 
-  return {isConnected, readyState};
+  const {status} = useWebSocket(WS_URL, {
+    autoReconnect: {
+      retries: 10,
+      delay: 3000,
+    },
+    onMessage: (ws, event) => {
+      try {
+        const rawData = event.data as string;
+        const rawUpdates = parseWSMessage(rawData);
+        for (const raw of rawUpdates) {
+          const update = toWSPriceUpdate(raw);
+          buffer.set(update.ticker, update);
+        }
+        throttledFlush.value?.();
+      } catch {
+        console.error('Failed to parse WS message');
+      }
+    },
+  });
+
+  const isConnected = computed(() => status.value === 'OPEN');
+
+  return {isConnected, status};
 }

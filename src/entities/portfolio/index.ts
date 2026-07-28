@@ -6,4 +6,3 @@ export {
   selectFormattedPortfolioValue,
   selectFormattedBalance,
 } from './model';
-export {PortfolioInfo} from './ui/PortfolioInfo';

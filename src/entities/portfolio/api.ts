@@ -1,4 +1,5 @@
-import {useQuery} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/vue-query';
+
 import {getPortfolio} from '@/shared/api';
 
 export function usePortfolio() {

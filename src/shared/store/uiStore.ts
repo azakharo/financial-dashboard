@@ -1,52 +1,72 @@
-import {create} from 'zustand';
+import {ref} from 'vue';
+import {defineStore, storeToRefs} from 'pinia';
 
 import type {Sector, Timeframe} from '@/shared/api/types';
 
 export type TradeMode = 'buy' | 'sell';
 
-interface UIState {
-  selectedTicker: string | null;
-  tradeModalOpen: boolean;
-  tradeModalTicker: string | null;
-  tradeModalMode: TradeMode;
-  sectorFilter: Sector | null;
-  searchQuery: string;
-  chartTimeframe: Timeframe;
-}
+export const useUIStore = defineStore('ui', () => {
+  const selectedTicker = ref<string | null>(null);
+  const tradeModalOpen = ref(false);
+  const tradeModalTicker = ref<string | null>(null);
+  const tradeModalMode = ref<TradeMode>('buy');
+  const sectorFilter = ref<Sector | null>(null);
+  const searchQuery = ref('');
+  const chartTimeframe = ref<Timeframe>('1D');
 
-interface UIActions {
-  setSelectedTicker: (ticker: string | null) => void;
-  openTradeModal: (ticker: string, mode: TradeMode) => void;
-  closeTradeModal: () => void;
-  setSectorFilter: (sector: Sector | null) => void;
-  setSearchQuery: (query: string) => void;
-  setChartTimeframe: (timeframe: Timeframe) => void;
-}
+  function setSelectedTicker(ticker: string | null) {
+    selectedTicker.value = ticker;
+  }
 
-export type UIStore = UIState & UIActions;
+  function openTradeModal(ticker: string, mode: TradeMode) {
+    tradeModalOpen.value = true;
+    tradeModalTicker.value = ticker;
+    tradeModalMode.value = mode;
+  }
 
-export const useUIStore = create<UIStore>(set => ({
-  selectedTicker: null,
-  tradeModalOpen: false,
-  tradeModalTicker: null,
-  tradeModalMode: 'buy',
-  sectorFilter: null,
-  searchQuery: '',
-  chartTimeframe: '1D',
+  function closeTradeModal() {
+    tradeModalOpen.value = false;
+    tradeModalTicker.value = null;
+  }
 
-  setSelectedTicker: ticker => set({selectedTicker: ticker}),
-  openTradeModal: (ticker, mode) =>
-    set({
-      tradeModalOpen: true,
-      tradeModalTicker: ticker,
-      tradeModalMode: mode,
-    }),
-  closeTradeModal: () =>
-    set({
-      tradeModalOpen: false,
-      tradeModalTicker: null,
-    }),
-  setSectorFilter: sector => set({sectorFilter: sector}),
-  setSearchQuery: query => set({searchQuery: query}),
-  setChartTimeframe: timeframe => set({chartTimeframe: timeframe}),
-}));
+  function setSectorFilter(sector: Sector | null) {
+    sectorFilter.value = sector;
+  }
+
+  function setSearchQuery(query: string) {
+    searchQuery.value = query;
+  }
+
+  function setChartTimeframe(timeframe: Timeframe) {
+    chartTimeframe.value = timeframe;
+  }
+
+  function $reset() {
+    selectedTicker.value = null;
+    tradeModalOpen.value = false;
+    tradeModalTicker.value = null;
+    tradeModalMode.value = 'buy';
+    sectorFilter.value = null;
+    searchQuery.value = '';
+    chartTimeframe.value = '1D';
+  }
+
+  return {
+    selectedTicker,
+    tradeModalOpen,
+    tradeModalTicker,
+    tradeModalMode,
+    sectorFilter,
+    searchQuery,
+    chartTimeframe,
+    setSelectedTicker,
+    openTradeModal,
+    closeTradeModal,
+    setSectorFilter,
+    setSearchQuery,
+    setChartTimeframe,
+    $reset,
+  };
+});
+
+export {storeToRefs};

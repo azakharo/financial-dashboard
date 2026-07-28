@@ -15,7 +15,6 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "jsx": "react-jsx",
 
     /* Linting */
     "strict": true,
@@ -29,5 +28,5 @@
       "@/*": ["./src/*"],
     },
   },
-  "include": ["src", "e2e"]
+  "include": ["src/**/*.ts", "src/**/*.vue", "e2e/**/*.ts"],
 }

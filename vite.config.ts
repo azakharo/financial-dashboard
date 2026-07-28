@@ -1,19 +1,10 @@
 import * as path from 'node:path';
 import {defineConfig} from 'vite';
-import react from '@vitejs/plugin-react';
+import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
-import babel from 'vite-plugin-babel';
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    babel({
-      babelConfig: {
-        plugins: ['babel-plugin-react-compiler'],
-      },
-    }),
-  ],
+  plugins: [vue(), tailwindcss()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
