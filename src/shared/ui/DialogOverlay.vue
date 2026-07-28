@@ -20,7 +20,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <DialogOverlay :class="classes" data-slot="dialog-overlay">
+  <DialogOverlay :class="classes">
     <slot />
   </DialogOverlay>
 </template>
