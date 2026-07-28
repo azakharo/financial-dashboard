@@ -41,7 +41,7 @@ const classes = computed(() =>
 <template>
   <DialogPortal>
     <DialogOverlay />
-    <DialogContent :class="classes" data-slot="dialog-content">
+    <DialogContent :class="classes">
       <slot />
       <DialogClose v-if="showCloseButton" as-child>
         <Button variant="ghost" class="absolute top-2 right-2" size="icon-sm">

@@ -1,18 +1,18 @@
 import {useQuery} from '@tanstack/vue-query';
-import {computed} from 'vue';
+import {computed, toValue, type MaybeRef} from 'vue';
 
 import {getStockHistory} from '@/shared/api';
 import type {Timeframe} from '@/shared/api';
 
 export function useStockHistory(
-  ticker: string | null,
-  timeframe: Timeframe = '1D',
+  ticker: MaybeRef<string | null>,
+  timeframe: MaybeRef<Timeframe> = '1D',
 ) {
-  const enabled = computed(() => ticker !== null);
+  const enabled = computed(() => toValue(ticker) !== null);
 
   return useQuery({
     queryKey: ['stockHistory', ticker, timeframe],
-    queryFn: () => getStockHistory(ticker!, timeframe),
+    queryFn: () => getStockHistory(toValue(ticker)!, toValue(timeframe)!),
     enabled,
     structuralSharing: true,
   });

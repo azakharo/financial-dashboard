@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import {computed} from 'vue';
 
-import {Dialog, DialogContent, DialogHeader, DialogTitle} from '@/shared/ui';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/shared/ui';
 import {useStocks} from '@/entities/stock';
 import {useUIStore, storeToRefs} from '@/shared/store';
 
@@ -37,6 +43,10 @@ function handleOpenChange(open: boolean) {
     <DialogContent class="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
+        <DialogDescription>
+          Введите количество акций для
+          {{ tradeModalMode === 'buy' ? 'покупки' : 'продажи' }}.
+        </DialogDescription>
       </DialogHeader>
       <TradeForm :stock="selectedStock" :mode="tradeModalMode" />
     </DialogContent>
