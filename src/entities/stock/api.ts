@@ -1,12 +1,17 @@
 import {useInfiniteQuery} from '@tanstack/vue-query';
-import {computed} from 'vue';
+import {computed, unref, type MaybeRef} from 'vue';
 
 import {getStocks} from '@/shared/api';
-import type {Stock, PaginatedResponse, GetStocksParams} from '@/shared/api';
+import type {Stock, PaginatedResponse} from '@/shared/api';
 
-export function useStocks(params: Omit<GetStocksParams, 'cursor'> = {}) {
-  const sector = computed(() => params.sector);
-  const search = computed(() => params.search);
+interface UseStocksParams {
+  sector?: MaybeRef<string | undefined>;
+  search?: MaybeRef<string | undefined>;
+}
+
+export function useStocks(params: UseStocksParams = {}) {
+  const sector = computed(() => unref(params.sector));
+  const search = computed(() => unref(params.search));
 
   return useInfiniteQuery({
     queryKey: ['stocks', {sector, search}],
