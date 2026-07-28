@@ -10,7 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix",
-    "ts": "vue-tsc --noEmit",
+    "ts": "vue-tsc --noEmit -p tsconfig.app.json",
     "check:server": "tsx mock-server/check-server.ts",
     "test": "vitest",
     "test:run": "vitest run",

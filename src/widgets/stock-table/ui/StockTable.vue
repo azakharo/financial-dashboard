@@ -6,6 +6,7 @@ import {useStocks} from '@/entities/stock';
 import {useUIStore, storeToRefs} from '@/shared/store';
 import {SearchInput} from '@/features/search';
 import {SECTORS} from '@/shared/api';
+import type {Sector} from '@/shared/api';
 
 import StockTableBody from './StockTableBody.vue';
 
@@ -39,7 +40,7 @@ function handleSell(ticker: string) {
   uiStore.openTradeModal(ticker, 'sell');
 }
 
-function handleSectorClick(sector: string | null) {
+function handleSectorClick(sector: Sector | null) {
   uiStore.setSectorFilter(sector);
 }
 
