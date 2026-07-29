@@ -1,7 +1,7 @@
 import type { Express } from 'express'
 import { WebSocket, WebSocketServer } from 'ws'
 import { stocks } from '../data/stocks'
-import { addPricePoint } from '../data/history'
+import { addPricePoint, getHistory } from '../data/history'
 import { recalculateTotalValue } from '../data/portfolio'
 
 const isSingleStockPriceUpdate = true
@@ -71,6 +71,7 @@ export class PriceBroadcaster {
       }
 
       updates.push(update)
+      getHistory(stock, '1D')
       addPricePoint(stock.ticker, stock.currentPrice)
     } else {
       for (let i = 0; i < 10; i++) {
@@ -96,6 +97,7 @@ export class PriceBroadcaster {
         }
 
         updates.push(update)
+        getHistory(stock, '1D')
         addPricePoint(stock.ticker, stock.currentPrice)
       }
     }

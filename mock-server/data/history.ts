@@ -58,15 +58,18 @@ export function getHistory(stock: Stock, timeframe: Timeframe): PricePoint[] {
 }
 
 export function addPricePoint(ticker: string, price: number): void {
-  const tickerCache = historyCache.get(ticker)
-  if (!tickerCache) return
+  let tickerCache = historyCache.get(ticker)
+  if (!tickerCache) {
+    tickerCache = new Map()
+    historyCache.set(ticker, tickerCache)
+  }
 
   const now = new Date().toISOString()
+  const points = tickerCache.get('1D')
+  if (!points) return
 
-  for (const points of tickerCache.values()) {
-    points.push({ timestamp: now, price })
-    if (points.length > 500) {
-      points.shift()
-    }
+  points.push({ timestamp: now, price })
+  if (points.length > 500) {
+    points.shift()
   }
 }
