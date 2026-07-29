@@ -3,6 +3,7 @@ import {computed, unref, type MaybeRef} from 'vue';
 
 import {getStocks} from '@/shared/api';
 import type {Stock, PaginatedResponse, Sector} from '@/shared/api';
+import {stocksQueryKey} from './queryKeys';
 
 interface UseStocksParams {
   sector?: MaybeRef<Sector | string | null | undefined>;
@@ -17,7 +18,9 @@ export function useStocks(params: UseStocksParams = {}) {
   const search = computed(() => unref(params.search) ?? undefined);
 
   return useInfiniteQuery({
-    queryKey: ['stocks', {sector, search}],
+    queryKey: computed(() =>
+      stocksQueryKey({sector: sector.value, search: search.value}),
+    ),
     queryFn: ({pageParam}) =>
       getStocks({
         sector: sector.value,

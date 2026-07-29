@@ -10,6 +10,7 @@ import type {
 } from '@/shared/api';
 import {applyPriceUpdates} from '@/shared/api/websocket';
 import {useUIStore} from '@/shared/store';
+import {stocksQueryKey} from '@/entities/stock/queryKeys';
 
 const WS_URL = '/ws';
 const THROTTLE_MS = 2000;
@@ -57,13 +58,7 @@ export function usePriceUpdate() {
       const searchQuery = uiStore.searchQuery;
 
       queryClient.setQueryData(
-        [
-          'stocks',
-          {
-            sector: sectorFilter ?? undefined,
-            search: searchQuery || undefined,
-          },
-        ],
+        stocksQueryKey({sector: sectorFilter, search: searchQuery}),
         (old: InfiniteData<PaginatedResponse<Stock>> | undefined) => {
           if (!old) return old;
           const newPages = applyPriceUpdates(old.pages, priceMap);
