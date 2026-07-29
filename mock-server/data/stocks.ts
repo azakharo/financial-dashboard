@@ -42,15 +42,16 @@ export function generateStocks(count: number = 10000): MockStock[] {
 
   for (let i = 0; i < count; i++) {
     const ticker = generateTicker(i)
-    const currentPrice = generateRandomPrice()
-    const dayInitialPrice = currentPrice
+    const dayInitialPrice = generateRandomPrice()
+    const priceChange24h = generateRandomChange()
+    const currentPrice = Math.round(dayInitialPrice * (1 + priceChange24h / 100) * 100) / 100
     stocks.push({
       ticker,
       name: generateCompanyName(ticker, i),
       sector: SECTORS[i % SECTORS.length],
       currentPrice,
       dayInitialPrice,
-      priceChange24h: generateRandomChange(),
+      priceChange24h,
       quantityInPortfolio: 0,
     })
   }

@@ -1,4 +1,4 @@
-import type { MockMockStock } from './stocks'
+import type { MockStock } from './stocks'
 
 export interface Portfolio {
   totalValue: number
@@ -53,7 +53,7 @@ export function getPortfolioState(): PortfolioState {
   return portfolioState
 }
 
-export function updateMockStockQuantity(ticker: string, delta: number, price: number): boolean {
+export function updateStockQuantity(ticker: string, delta: number, price: number): boolean {
   const currentQuantity = portfolioState.stockQuantities.get(ticker) || 0
   const newQuantity = currentQuantity + delta
 
