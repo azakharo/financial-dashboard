@@ -2,7 +2,7 @@
 import {computed} from 'vue';
 
 import {usePortfolio} from '../api';
-import {selectFormattedPortfolioValue, selectFormattedBalance} from '../model';
+import {selectFormattedBalance, selectFormattedPortfolioValue} from '../model';
 
 const {data: portfolio, isLoading, error} = usePortfolio();
 

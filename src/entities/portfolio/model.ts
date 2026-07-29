@@ -10,12 +10,6 @@ export function selectTotalValue(portfolio: Portfolio | undefined): number {
   return portfolio?.totalValue ?? 0;
 }
 
-export function selectDailyChangePercent(
-  portfolio: Portfolio | undefined,
-): number {
-  return portfolio?.dailyChangePercent ?? 0;
-}
-
 export function selectFormattedPortfolioValue(
   portfolio: Portfolio | undefined,
 ): string {
