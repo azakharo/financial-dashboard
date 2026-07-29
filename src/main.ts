@@ -3,11 +3,8 @@ import {createPinia} from 'pinia';
 import {VueQueryPlugin, QueryClient} from '@tanstack/vue-query';
 import VueApexCharts from 'vue3-apexcharts';
 
-import App from './App.vue';
-import router from './app/router';
-
-import '@fontsource-variable/geist';
-import './index.css';
+import {App, router} from './app';
+import './app/styles/index.css';
 
 const queryClient = new QueryClient({
   defaultOptions: {
