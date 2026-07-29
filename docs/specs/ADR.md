@@ -4,26 +4,26 @@
 
 ### 1.1 Фреймворк и окружение
 
-| Компонент    | Решение           | Обоснование                           |
-| ------------ | ----------------- | ------------------------------------- |
-| Vue          | 3 (Composition API, `<script setup>`) | Миграция с React 19 |
-| TypeScript   | Строгая типизация | Требование PRD, без `any`             |
-| Vite         | Сборщик           | Требование PRD                        |
-| Tailwind CSS | Стилизация        | Требование PRD                        |
-| shadcn-vue   | UI компоненты     | reka-ui (radix-nova style)            |
+| Компонент    | Решение                               | Обоснование                |
+| ------------ | ------------------------------------- | -------------------------- |
+| Vue          | 3 (Composition API, `<script setup>`) | Миграция с React 19        |
+| TypeScript   | Строгая типизация                     | Требование PRD, без `any`  |
+| Vite         | Сборщик                               | Требование PRD             |
+| Tailwind CSS | Стилизация                            | Требование PRD             |
+| shadcn-vue   | UI компоненты                         | reka-ui (radix-nova style) |
 
 ### 1.2 Библиотеки
 
-| Назначение                     | Библиотека              | Обоснование                                                                |
-| ------------------------------ | ----------------------- | -------------------------------------------------------------------------- |
-| HTTP клиент                    | ky                      | Легковесный (5KB), удобный API для JSON, тайпинфы из коробки               |
-| Управление состоянием (server) | @tanstack/vue-query     | Кеширование, рефетчинг, бесконечный скролл, интеграция с WebSocket         |
-| Управление состоянием (client) | pinia (setup stores)    | Официальный store для Vue 3. UI state: selectedTicker, modalState, filters, searchQuery |
-| Виртуализация таблицы          | @tanstack/vue-virtual   | Гибкий headless подход, совместимость с Vue Query                     |
-| Графики                        | vue3-apexcharts         | Декларативный API, кастомный tooltip, градиент через fill.gradient        |
-| Работа с датами                | date-fns                | Указано в react_rules.md                                                   |
-| WebSocket                      | @vueuse/core useWebSocket | Idiomatic Vue, авто-реконнект, авто-cleanup через tryOnScopeDispose                 |
-| Throttle/batch обновлений      | lodash                  | Проверенная реализация, tree-shaking                                       |
+| Назначение                     | Библиотека                | Обоснование                                                                             |
+| ------------------------------ | ------------------------- | --------------------------------------------------------------------------------------- |
+| HTTP клиент                    | ky                        | Легковесный (5KB), удобный API для JSON, тайпинфы из коробки                            |
+| Управление состоянием (server) | @tanstack/vue-query       | Кеширование, рефетчинг, бесконечный скролл, интеграция с WebSocket                      |
+| Управление состоянием (client) | pinia (setup stores)      | Официальный store для Vue 3. UI state: selectedTicker, modalState, filters, searchQuery |
+| Виртуализация таблицы          | @tanstack/vue-virtual     | Гибкий headless подход, совместимость с Vue Query                                       |
+| Графики                        | vue3-apexcharts           | Декларативный API, кастомный tooltip, градиент через fill.gradient                      |
+| Работа с датами                | date-fns                  | Указано в react_rules.md                                                                |
+| WebSocket                      | @vueuse/core useWebSocket | Idiomatic Vue, авто-реконнект, авто-cleanup через tryOnScopeDispose                     |
+| Throttle/batch обновлений      | lodash                    | Проверенная реализация, tree-shaking                                                    |
 
 ---
 
@@ -259,12 +259,12 @@ interface WSPriceUpdate {
 
 ### 7.1 Стратегия
 
-| Уровень         | Инструмент             | Подход                                            |
-| --------------- | ---------------------- | ------------------------------------------------- |
-| Unit            | Vitest + vi.fn()       | Хуки, утилиты, selectors — прямой мок queryClient |
-| Integration     | Vitest + @testing-library/vue     | Компоненты — мок REST через MSW                   |
-| WebSocket тесты | Vitest + MockWebSocket | Кастомный класс для мокирования WebSocket         |
-| E2E             | Playwright             | Page Object Model, мок через page.route()         |
+| Уровень         | Инструмент                    | Подход                                            |
+| --------------- | ----------------------------- | ------------------------------------------------- |
+| Unit            | Vitest + vi.fn()              | Хуки, утилиты, selectors — прямой мок queryClient |
+| Integration     | Vitest + @testing-library/vue | Компоненты — мок REST через MSW                   |
+| WebSocket тесты | Vitest + MockWebSocket        | Кастомный класс для мокирования WebSocket         |
+| E2E             | Playwright                    | Page Object Model, мок через page.route()         |
 
 ### 7.2 Покрытие
 
@@ -304,11 +304,13 @@ server: {
 **Решение:** Полная миграция SPA «Financial Dashboard» с React 19 на Vue 3 (Composition API, `<script setup>`).
 
 **Обоснование:**
+
 - Унификация стека с другими проектами команды
 - Упрощение архитектуры за счет нативной реактивности Vue
 - Pinia как более идиоматичный solution для Vue
 
 **Ключевые изменения:**
+
 - React 19 → Vue 3.5
 - Zustand → Pinia (setup stores)
 - @tanstack/react-query → @tanstack/vue-query
@@ -317,6 +319,7 @@ server: {
 - radix-ui → reka-ui (через shadcn-vue)
 
 **Результат:**
+
 - TypeScript проверка: ✅
 - ESLint: ✅
 - Production build: ✅
