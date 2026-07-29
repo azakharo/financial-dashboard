@@ -71,6 +71,9 @@ const chartOptions = computed(() => ({
     toolbar: {show: false},
     zoom: {enabled: false},
   },
+  dataLabels: {
+    enabled: false,
+  },
   stroke: {
     curve: 'monotoneCubic' as const,
     width: 2,
