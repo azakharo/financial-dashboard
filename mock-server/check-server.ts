@@ -114,7 +114,7 @@ async function runTests(): Promise<void> {
   try {
     const { data, status } = await fetchJSON<{ success: boolean; newBalance: number }>(
       '/api/portfolio/buy',
-      { method: 'POST', body: { ticker: 'A', quantity: 5 } }
+      { method: 'POST', body: { ticker: 'AAPL', quantity: 5 } }
     )
     results.push({
       name: 'Buy stock (AAPL)',
@@ -127,7 +127,7 @@ async function runTests(): Promise<void> {
 
   // Test 6: Get history
   try {
-    const { data, status } = await fetchJSON<{ length: number }[]>('/api/stocks/A/history?timeframe=1D')
+    const { data, status } = await fetchJSON<{ length: number }[]>('/api/stocks/AAPL/history?timeframe=1D')
     results.push({
       name: 'Get stock history',
       passed: status === 200 && Array.isArray(data) && data.length > 0,
