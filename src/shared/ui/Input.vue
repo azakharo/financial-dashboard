@@ -60,7 +60,6 @@ function onInput(event: Event) {
     :value="modelValue"
     :placeholder="placeholder"
     :disabled="disabled"
-    data-slot="input"
     @input="onInput"
   />
 </template>

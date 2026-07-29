@@ -117,7 +117,7 @@ export function usePriceUpdate() {
       retries: 10,
       delay: 3000,
     },
-    onMessage: (ws, event) => {
+    onMessage: (_ws, event) => {
       try {
         const rawData = event.data as string;
         const rawUpdates = parseWSMessage(rawData);

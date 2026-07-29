@@ -23,6 +23,7 @@ const props = withDefaults(
       | 'icon-sm'
       | 'icon-lg';
     asChild?: boolean;
+    type?: 'button' | 'submit' | 'reset';
     class?: string;
     disabled?: boolean;
   }>(),
@@ -30,10 +31,13 @@ const props = withDefaults(
     variant: 'default',
     size: 'default',
     asChild: false,
+    type: 'button',
     class: undefined,
     disabled: false,
   },
 );
+
+const emit = defineEmits<{click: [event: MouseEvent]}>();
 
 const buttonVariants = cva(
   `
@@ -140,11 +144,12 @@ const classes = computed(() =>
 <template>
   <button
     v-if="!asChild"
+    :type="type"
     :class="classes"
     :disabled="disabled"
-    data-slot="button"
     :data-variant="variant"
     :data-size="size"
+    @click="emit('click', $event)"
   >
     <slot />
   </button>

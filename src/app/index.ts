@@ -1,2 +1,1 @@
-export {QueryProvider} from './providers';
-export {AppRouter} from './router';
+export {default as router} from './router';

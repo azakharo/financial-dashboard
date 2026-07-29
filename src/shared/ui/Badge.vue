@@ -21,6 +21,8 @@ const props = withDefaults(
   },
 );
 
+const emit = defineEmits<{click: []}>();
+
 const badgeVariants = cva(
   `
     group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1
@@ -78,7 +80,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <span :class="classes" data-slot="badge" :data-variant="variant">
+  <span :class="classes" :data-variant="variant" @click="emit('click')">
     <slot />
   </span>
 </template>

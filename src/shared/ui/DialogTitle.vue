@@ -12,7 +12,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <DialogTitle :class="classes" data-slot="dialog-title">
+  <DialogTitle :class="classes">
     <slot />
   </DialogTitle>
 </template>

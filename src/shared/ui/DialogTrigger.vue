@@ -5,7 +5,7 @@ const props = defineProps<DialogTriggerProps>();
 </script>
 
 <template>
-  <DialogTrigger v-bind="props" data-slot="dialog-trigger">
+  <DialogTrigger v-bind="props">
     <slot />
   </DialogTrigger>
 </template>

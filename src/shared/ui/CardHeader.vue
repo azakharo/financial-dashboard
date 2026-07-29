@@ -22,7 +22,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <div :class="classes" data-slot="card-header">
+  <div :class="classes">
     <slot />
   </div>
 </template>

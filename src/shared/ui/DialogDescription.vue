@@ -19,7 +19,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <DialogDescription :class="classes" data-slot="dialog-description">
+  <DialogDescription :class="classes">
     <slot />
   </DialogDescription>
 </template>

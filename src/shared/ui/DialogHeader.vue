@@ -9,7 +9,7 @@ const classes = computed(() => cn('flex flex-col gap-2', props.class));
 </script>
 
 <template>
-  <div :class="classes" data-slot="dialog-header">
+  <div :class="classes">
     <slot />
   </div>
 </template>

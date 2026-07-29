@@ -1,18 +1,11 @@
 import {describe, expect, it, beforeEach, afterEach, vi} from 'vitest';
+import {createPinia, setActivePinia} from 'pinia';
 
 import {useUIStore} from '@/shared/store';
 
 describe('useUIStore', () => {
   beforeEach(() => {
-    useUIStore.setState({
-      selectedTicker: null,
-      tradeModalOpen: false,
-      tradeModalTicker: null,
-      tradeModalMode: 'buy',
-      sectorFilter: null,
-      searchQuery: '',
-      chartTimeframe: '1D',
-    });
+    setActivePinia(createPinia());
   });
 
   afterEach(() => {
@@ -21,120 +14,152 @@ describe('useUIStore', () => {
 
   describe('setSelectedTicker', () => {
     it('sets selected ticker', () => {
-      useUIStore.getState().setSelectedTicker('AAPL');
-      expect(useUIStore.getState().selectedTicker).toBe('AAPL');
+      const store = useUIStore();
+      store.setSelectedTicker('AAPL');
+      expect(store.selectedTicker).toBe('AAPL');
     });
 
     it('clears selected ticker when null', () => {
-      useUIStore.getState().setSelectedTicker('AAPL');
-      useUIStore.getState().setSelectedTicker(null);
-      expect(useUIStore.getState().selectedTicker).toBeNull();
+      const store = useUIStore();
+      store.setSelectedTicker('AAPL');
+      store.setSelectedTicker(null);
+      expect(store.selectedTicker).toBeNull();
     });
   });
 
   describe('openTradeModal', () => {
     it('opens modal with correct ticker and buy mode', () => {
-      useUIStore.getState().openTradeModal('GOOGL', 'buy');
-      const state = useUIStore.getState();
-      expect(state.tradeModalOpen).toBe(true);
-      expect(state.tradeModalTicker).toBe('GOOGL');
-      expect(state.tradeModalMode).toBe('buy');
+      const store = useUIStore();
+      store.openTradeModal('GOOGL', 'buy');
+      expect(store.tradeModalOpen).toBe(true);
+      expect(store.tradeModalTicker).toBe('GOOGL');
+      expect(store.tradeModalMode).toBe('buy');
     });
 
     it('opens modal with sell mode', () => {
-      useUIStore.getState().openTradeModal('MSFT', 'sell');
-      const state = useUIStore.getState();
-      expect(state.tradeModalOpen).toBe(true);
-      expect(state.tradeModalTicker).toBe('MSFT');
-      expect(state.tradeModalMode).toBe('sell');
+      const store = useUIStore();
+      store.openTradeModal('MSFT', 'sell');
+      expect(store.tradeModalOpen).toBe(true);
+      expect(store.tradeModalTicker).toBe('MSFT');
+      expect(store.tradeModalMode).toBe('sell');
     });
   });
 
   describe('closeTradeModal', () => {
     it('closes modal and clears ticker', () => {
-      useUIStore.getState().openTradeModal('AAPL', 'buy');
-      useUIStore.getState().closeTradeModal();
-      const state = useUIStore.getState();
-      expect(state.tradeModalOpen).toBe(false);
-      expect(state.tradeModalTicker).toBeNull();
+      const store = useUIStore();
+      store.openTradeModal('AAPL', 'buy');
+      store.closeTradeModal();
+      expect(store.tradeModalOpen).toBe(false);
+      expect(store.tradeModalTicker).toBeNull();
     });
 
     it('preserves mode after closing', () => {
-      useUIStore.getState().openTradeModal('AAPL', 'sell');
-      useUIStore.getState().closeTradeModal();
-      expect(useUIStore.getState().tradeModalMode).toBe('sell');
+      const store = useUIStore();
+      store.openTradeModal('AAPL', 'sell');
+      store.closeTradeModal();
+      expect(store.tradeModalMode).toBe('sell');
     });
   });
 
   describe('setSectorFilter', () => {
     it('sets sector filter', () => {
-      useUIStore.getState().setSectorFilter('Technology');
-      expect(useUIStore.getState().sectorFilter).toBe('Technology');
+      const store = useUIStore();
+      store.setSectorFilter('Technology');
+      expect(store.sectorFilter).toBe('Technology');
     });
 
     it('clears sector filter when null', () => {
-      useUIStore.getState().setSectorFilter('Finance');
-      useUIStore.getState().setSectorFilter(null);
-      expect(useUIStore.getState().sectorFilter).toBeNull();
+      const store = useUIStore();
+      store.setSectorFilter('Finance');
+      store.setSectorFilter(null);
+      expect(store.sectorFilter).toBeNull();
     });
   });
 
   describe('setSearchQuery', () => {
     it('sets search query', () => {
-      useUIStore.getState().setSearchQuery('Apple');
-      expect(useUIStore.getState().searchQuery).toBe('Apple');
+      const store = useUIStore();
+      store.setSearchQuery('Apple');
+      expect(store.searchQuery).toBe('Apple');
     });
 
     it('handles empty string', () => {
-      useUIStore.getState().setSearchQuery('Test');
-      useUIStore.getState().setSearchQuery('');
-      expect(useUIStore.getState().searchQuery).toBe('');
+      const store = useUIStore();
+      store.setSearchQuery('Test');
+      store.setSearchQuery('');
+      expect(store.searchQuery).toBe('');
     });
   });
 
   describe('setChartTimeframe', () => {
     it('sets 1D timeframe', () => {
-      useUIStore.getState().setChartTimeframe('1D');
-      expect(useUIStore.getState().chartTimeframe).toBe('1D');
+      const store = useUIStore();
+      store.setChartTimeframe('1D');
+      expect(store.chartTimeframe).toBe('1D');
     });
 
     it('sets 1W timeframe', () => {
-      useUIStore.getState().setChartTimeframe('1W');
-      expect(useUIStore.getState().chartTimeframe).toBe('1W');
+      const store = useUIStore();
+      store.setChartTimeframe('1W');
+      expect(store.chartTimeframe).toBe('1W');
     });
 
     it('sets 1M timeframe', () => {
-      useUIStore.getState().setChartTimeframe('1M');
-      expect(useUIStore.getState().chartTimeframe).toBe('1M');
+      const store = useUIStore();
+      store.setChartTimeframe('1M');
+      expect(store.chartTimeframe).toBe('1M');
     });
 
     it('sets 1Y timeframe', () => {
-      useUIStore.getState().setChartTimeframe('1Y');
-      expect(useUIStore.getState().chartTimeframe).toBe('1Y');
+      const store = useUIStore();
+      store.setChartTimeframe('1Y');
+      expect(store.chartTimeframe).toBe('1Y');
     });
   });
 
   describe('multiple actions', () => {
     it('handles sequential state changes', () => {
-      useUIStore.getState().setSelectedTicker('AAPL');
-      useUIStore.getState().setSectorFilter('Technology');
-      useUIStore.getState().setSearchQuery('App');
-      useUIStore.getState().setChartTimeframe('1W');
+      const store = useUIStore();
+      store.setSelectedTicker('AAPL');
+      store.setSectorFilter('Technology');
+      store.setSearchQuery('App');
+      store.setChartTimeframe('1W');
 
-      const state = useUIStore.getState();
-      expect(state.selectedTicker).toBe('AAPL');
-      expect(state.sectorFilter).toBe('Technology');
-      expect(state.searchQuery).toBe('App');
-      expect(state.chartTimeframe).toBe('1W');
+      expect(store.selectedTicker).toBe('AAPL');
+      expect(store.sectorFilter).toBe('Technology');
+      expect(store.searchQuery).toBe('App');
+      expect(store.chartTimeframe).toBe('1W');
     });
 
     it('isolates modal state from other state', () => {
-      useUIStore.getState().setSelectedTicker('GOOGL');
-      useUIStore.getState().openTradeModal('AAPL', 'buy');
+      const store = useUIStore();
+      store.setSelectedTicker('GOOGL');
+      store.openTradeModal('AAPL', 'buy');
 
-      const state = useUIStore.getState();
-      expect(state.selectedTicker).toBe('GOOGL');
-      expect(state.tradeModalTicker).toBe('AAPL');
+      expect(store.selectedTicker).toBe('GOOGL');
+      expect(store.tradeModalTicker).toBe('AAPL');
+    });
+  });
+
+  describe('$reset', () => {
+    it('resets all state to initial values', () => {
+      const store = useUIStore();
+      store.setSelectedTicker('AAPL');
+      store.openTradeModal('GOOGL', 'sell');
+      store.setSectorFilter('Technology');
+      store.setSearchQuery('Test');
+      store.setChartTimeframe('1Y');
+
+      store.$reset();
+
+      expect(store.selectedTicker).toBeNull();
+      expect(store.tradeModalOpen).toBe(false);
+      expect(store.tradeModalTicker).toBeNull();
+      expect(store.tradeModalMode).toBe('buy');
+      expect(store.sectorFilter).toBeNull();
+      expect(store.searchQuery).toBe('');
+      expect(store.chartTimeframe).toBe('1D');
     });
   });
 });

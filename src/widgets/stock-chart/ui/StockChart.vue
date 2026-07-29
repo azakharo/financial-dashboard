@@ -66,17 +66,17 @@ const priceChange = computed(() => {
 
 const chartOptions = computed(() => ({
   chart: {
-    type: 'area',
+    type: 'area' as const,
     animations: {enabled: false},
     toolbar: {show: false},
     zoom: {enabled: false},
   },
   stroke: {
-    curve: 'monotone' as const,
+    curve: 'monotoneCubic' as const,
     width: 2,
   },
   fill: {
-    type: 'gradient',
+    type: 'gradient' as const,
     gradient: {
       shadeIntensity: 1,
       opacityFrom: 0.3,

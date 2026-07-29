@@ -11,7 +11,7 @@ const classes = computed(() => cn('px-(--card-spacing)', props.class));
 </script>
 
 <template>
-  <div :class="classes" data-slot="card-content">
+  <div :class="classes">
     <slot />
   </div>
 </template>

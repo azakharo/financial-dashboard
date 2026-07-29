@@ -1,1 +1,1 @@
-export {useUIStore, storeToRefs} from './uiStore';
+export {useUIStore, storeToRefs, type TradeMode} from './uiStore';

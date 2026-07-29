@@ -18,7 +18,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <div :class="classes" data-slot="dialog-footer">
+  <div :class="classes">
     <slot />
   </div>
 </template>

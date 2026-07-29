@@ -16,7 +16,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <div :class="classes" data-slot="card-footer">
+  <div :class="classes">
     <slot />
   </div>
 </template>

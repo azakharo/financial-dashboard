@@ -33,7 +33,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <div :class="classes" data-slot="card" :data-size="size">
+  <div :class="classes" :data-size="size">
     <slot />
   </div>
 </template>
