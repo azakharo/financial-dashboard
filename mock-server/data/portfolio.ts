@@ -33,7 +33,6 @@ export function createPortfolioState(
     for (const stock of portfolioMockStocks) {
       const quantity = Math.floor(10 + Math.random() * 90)
       state.stockQuantities.set(stock.ticker, quantity)
-      stock.quantityInPortfolio = quantity
       state.portfolio.totalValue += quantity * stock.currentPrice
     }
   }
@@ -51,6 +50,10 @@ export function initPortfolioState(stocks: MockStock[], preset: 'default' | 'emp
 
 export function getPortfolioState(): PortfolioState {
   return portfolioState
+}
+
+export function getStockQuantity(ticker: string): number {
+  return portfolioState.stockQuantities.get(ticker) || 0
 }
 
 export function updateStockQuantity(ticker: string, delta: number, price: number): boolean {

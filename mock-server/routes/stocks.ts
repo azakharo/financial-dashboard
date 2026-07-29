@@ -1,5 +1,6 @@
 import type { Express } from 'express'
 import { stocks } from '../data/stocks'
+import { getStockQuantity } from '../data/portfolio'
 
 const DEFAULT_LIMIT = 50
 const MAX_LIMIT = 100
@@ -47,9 +48,14 @@ export function registerStocksRoutes(app: Express): void {
     const hasMore = paginatedStocks.length > limit
     const stocksToReturn = hasMore ? paginatedStocks.slice(0, limit) : paginatedStocks
 
-    const response: PaginatedResponse<typeof stocksToReturn[0]> = {
-      stocks: stocksToReturn,
-      nextCursor: hasMore ? stocksToReturn[stocksToReturn.length - 1]?.ticker || null : null,
+    const stocksResponse = stocksToReturn.map(stock => ({
+      ...stock,
+      quantityInPortfolio: getStockQuantity(stock.ticker),
+    }))
+
+    const response: PaginatedResponse<typeof stocksResponse[0]> = {
+      stocks: stocksResponse,
+      nextCursor: hasMore ? stocksResponse[stocksResponse.length - 1]?.ticker || null : null,
       hasMore,
     }
 

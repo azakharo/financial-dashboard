@@ -67,8 +67,6 @@ export function registerPortfolioRoutes(app: Express): void {
       return
     }
 
-    stock.quantityInPortfolio += quantity
-
     const state = getPortfolioState()
     res.json({
       success: true,
@@ -106,8 +104,6 @@ export function registerPortfolioRoutes(app: Express): void {
       } as TradeResponse)
       return
     }
-
-    stock.quantityInPortfolio -= quantity
 
     const state = getPortfolioState()
     res.json({
