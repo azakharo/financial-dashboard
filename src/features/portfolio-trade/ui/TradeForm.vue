@@ -2,6 +2,7 @@
 import {ref, computed} from 'vue';
 
 import {Button} from '@/shared/ui';
+import {formatPrice} from '@/shared/lib/format';
 import type {Stock, TradeMode} from '@/shared/api';
 import {usePortfolio} from '@/entities/portfolio';
 import {useUIStore} from '@/shared/store';
@@ -104,13 +105,7 @@ function handleClose() {
         {{ stock.ticker }} — {{ stock.name }}
       </div>
       <div class="text-sm text-muted-foreground">
-        Текущая цена:
-        {{
-          stock.currentPrice.toLocaleString('ru-RU', {
-            style: 'currency',
-            currency: 'USD',
-          })
-        }}
+        Текущая цена: {{ formatPrice(stock.currentPrice) }}
       </div>
     </div>
 
@@ -133,22 +128,9 @@ function handleClose() {
 
     <div class="rounded-md bg-muted p-3">
       <div class="text-sm text-muted-foreground">Итого к оплате:</div>
-      <div class="text-xl font-bold">
-        {{
-          totalCost.toLocaleString('ru-RU', {
-            style: 'currency',
-            currency: 'USD',
-          })
-        }}
-      </div>
+      <div class="text-xl font-bold">{{ formatPrice(totalCost) }}</div>
       <div v-if="mode === 'buy'" class="text-xs text-muted-foreground">
-        Доступно:
-        {{
-          availableBalance.toLocaleString('ru-RU', {
-            style: 'currency',
-            currency: 'USD',
-          })
-        }}
+        Доступно: {{ formatPrice(availableBalance) }}
       </div>
     </div>
 

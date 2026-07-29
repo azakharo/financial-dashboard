@@ -1,4 +1,5 @@
 import type {Portfolio} from '@/shared/api';
+import {formatPrice} from '@/shared/lib/format';
 
 export function selectAvailableBalance(
   portfolio: Portfolio | undefined,
@@ -14,22 +15,12 @@ export function selectFormattedPortfolioValue(
   portfolio: Portfolio | undefined,
 ): string {
   const value = selectTotalValue(portfolio);
-  return value.toLocaleString('ru-RU', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return formatPrice(value);
 }
 
 export function selectFormattedBalance(
   portfolio: Portfolio | undefined,
 ): string {
   const balance = selectAvailableBalance(portfolio);
-  return balance.toLocaleString('ru-RU', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return formatPrice(balance);
 }

@@ -1,5 +1,5 @@
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('ru-RU', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
@@ -26,5 +26,5 @@ export function formatLargeNumber(value: number): string {
 }
 
 export function formatQuantity(quantity: number): string {
-  return new Intl.NumberFormat('en-US').format(quantity);
+  return new Intl.NumberFormat('ru-RU').format(quantity);
 }

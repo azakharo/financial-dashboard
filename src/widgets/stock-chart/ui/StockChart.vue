@@ -4,6 +4,7 @@ import {format} from 'date-fns';
 import {ru} from 'date-fns/locale';
 
 import {Card, CardContent, CardHeader, Badge} from '@/shared/ui';
+import {formatPrice} from '@/shared/lib/format';
 import {useStockHistory} from '@/entities/price-history';
 import {useUIStore, storeToRefs} from '@/shared/store';
 import type {Timeframe, PricePoint} from '@/shared/api';
@@ -114,7 +115,7 @@ const chartOptions = computed(() => ({
       return `
         <div class="rounded-lg border bg-white p-2 shadow-sm">
           <div class="text-xs text-gray-500">${formatTooltipTimestamp(point.timestamp)}</div>
-          <div class="font-mono font-semibold">${point.y.toLocaleString('ru-RU', {style: 'currency', currency: 'USD'})}</div>
+          <div class="font-mono font-semibold">${formatPrice(point.y)}</div>
         </div>
       `;
     },
@@ -176,12 +177,7 @@ function handleTimeframeChange(timeframe: Timeframe) {
             v-if="latestPrice !== undefined"
             class="ml-4 text-base font-normal text-muted-foreground"
           >
-            {{
-              latestPrice.toLocaleString('ru-RU', {
-                style: 'currency',
-                currency: 'USD',
-              })
-            }}
+            {{ formatPrice(latestPrice) }}
             <span
               :class="[
                 'ml-2',

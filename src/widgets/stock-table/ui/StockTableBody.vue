@@ -3,6 +3,7 @@ import {ref, watch, computed} from 'vue';
 import {useVirtualizer} from '@tanstack/vue-virtual';
 
 import type {Stock} from '@/shared/api';
+import {formatPrice, formatQuantity} from '@/shared/lib/format';
 
 const props = defineProps<{
   stocks: Stock[];
@@ -106,12 +107,7 @@ function handleSell(ticker: string) {
             {{ stocks[virtualRow.index].name }}
           </div>
           <div class="w-32 text-right font-mono">
-            {{
-              stocks[virtualRow.index].currentPrice.toLocaleString('ru-RU', {
-                style: 'currency',
-                currency: 'USD',
-              })
-            }}
+            {{ formatPrice(stocks[virtualRow.index].currentPrice) }}
           </div>
           <div
             :class="[
@@ -125,11 +121,7 @@ function handleSell(ticker: string) {
             }}{{ stocks[virtualRow.index].priceChange24h.toFixed(2) }}%
           </div>
           <div class="w-24 text-right font-mono">
-            {{
-              stocks[virtualRow.index].quantityInPortfolio.toLocaleString(
-                'ru-RU',
-              )
-            }}
+            {{ formatQuantity(stocks[virtualRow.index].quantityInPortfolio) }}
           </div>
           <div class="flex w-48 justify-end gap-2">
             <button

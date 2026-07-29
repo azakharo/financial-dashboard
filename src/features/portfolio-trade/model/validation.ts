@@ -1,4 +1,5 @@
 import type {Stock} from '@/shared/api';
+import {formatPrice} from '@/shared/lib/format';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -40,7 +41,7 @@ export function validateBuy(
   if (totalCost > availableBalance) {
     return {
       isValid: false,
-      error: `Недостаточно средств. Нужно: ${formatCurrency(totalCost)}, доступно: ${formatCurrency(availableBalance)}`,
+      error: `Недостаточно средств. Нужно: ${formatPrice(totalCost)}, доступно: ${formatPrice(availableBalance)}`,
     };
   }
 
@@ -72,13 +73,4 @@ export function validateSell(
 
 export function calculateTotalCost(quantity: number, price: number): number {
   return quantity * price;
-}
-
-function formatCurrency(value: number): string {
-  return value.toLocaleString('ru-RU', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 }
