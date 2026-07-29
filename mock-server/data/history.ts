@@ -1,4 +1,4 @@
-import type { Stock } from './stocks'
+import type { MockMockStock } from './stocks'
 
 export type Timeframe = '1D' | '1W' | '1M' | '1Y'
 
@@ -14,7 +14,7 @@ const TIMEFRAME_CONFIG: Record<Timeframe, { points: number; intervalMs: number }
   '1Y': { points: 365, intervalMs: 24 * 60 * 60 * 1000 },
 }
 
-export function generateHistory(stock: Stock, timeframe: Timeframe): PricePoint[] {
+export function generateHistory(stock: MockStock, timeframe: Timeframe): PricePoint[] {
   const config = TIMEFRAME_CONFIG[timeframe]
   const now = new Date()
   const points: PricePoint[] = []
@@ -35,13 +35,13 @@ export function generateHistory(stock: Stock, timeframe: Timeframe): PricePoint[
   return points
 }
 
-export function generateIntradayHistory(stock: Stock): PricePoint[] {
+export function generateIntradayHistory(stock: MockStock): PricePoint[] {
   return generateHistory(stock, '1D')
 }
 
 const historyCache = new Map<string, Map<Timeframe, PricePoint[]>>()
 
-export function getHistory(stock: Stock, timeframe: Timeframe): PricePoint[] {
+export function getHistory(stock: MockStock, timeframe: Timeframe): PricePoint[] {
   let tickerCache = historyCache.get(stock.ticker)
   if (!tickerCache) {
     tickerCache = new Map()

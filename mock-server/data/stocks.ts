@@ -1,22 +1,11 @@
-export const SECTORS = [
-  'Technology',
-  'Healthcare',
-  'Finance',
-  'Consumer',
-  'Energy',
-  'Industrial',
-] as const
+import type { Sector, Stock } from '../../src/shared/api/types'
+import { SECTORS } from '../../src/shared/api/types'
 
-export type Sector = (typeof SECTORS)[number]
+export type { Sector }
+export { SECTORS }
 
-export interface Stock {
-  ticker: string
-  name: string
-  sector: Sector
-  currentPrice: number
+export interface MockStock extends Stock {
   dayInitialPrice: number
-  priceChange24h: number
-  quantityInPortfolio: number
 }
 
 const COMPANY_SUFFIXES = [
@@ -48,8 +37,8 @@ function generateRandomChange(): number {
   return Math.round((-20 + Math.random() * 40) * 100) / 100
 }
 
-export function generateStocks(count: number = 10000): Stock[] {
-  const stocks: Stock[] = []
+export function generateStocks(count: number = 10000): MockStock[] {
+  const stocks: MockStock[] = []
 
   for (let i = 0; i < count; i++) {
     const ticker = generateTicker(i)
@@ -69,4 +58,4 @@ export function generateStocks(count: number = 10000): Stock[] {
   return stocks
 }
 
-export const stocks: Stock[] = generateStocks(10000)
+export const stocks: MockStock[] = generateStocks(10000)

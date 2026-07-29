@@ -1,4 +1,4 @@
-import type { Stock } from './stocks'
+import type { MockMockStock } from './stocks'
 
 export interface Portfolio {
   totalValue: number
@@ -15,7 +15,7 @@ export interface PortfolioState {
 export const DEFAULT_BALANCE = 50000
 
 export function createPortfolioState(
-  stocks: Stock[],
+  stocks: MockStock[],
   preset: 'default' | 'empty' = 'default'
 ): PortfolioState {
   const state: PortfolioState = {
@@ -29,8 +29,8 @@ export function createPortfolioState(
   }
 
   if (preset === 'default') {
-    const portfolioStocks = stocks.slice(0, 10)
-    for (const stock of portfolioStocks) {
+    const portfolioMockStocks = stocks.slice(0, 10)
+    for (const stock of portfolioMockStocks) {
       const quantity = Math.floor(10 + Math.random() * 90)
       state.stockQuantities.set(stock.ticker, quantity)
       stock.quantityInPortfolio = quantity
@@ -45,7 +45,7 @@ export function createPortfolioState(
 
 let portfolioState: PortfolioState
 
-export function initPortfolioState(stocks: Stock[], preset: 'default' | 'empty'): void {
+export function initPortfolioState(stocks: MockStock[], preset: 'default' | 'empty'): void {
   portfolioState = createPortfolioState(stocks, preset)
 }
 
@@ -53,7 +53,7 @@ export function getPortfolioState(): PortfolioState {
   return portfolioState
 }
 
-export function updateStockQuantity(ticker: string, delta: number, price: number): boolean {
+export function updateMockStockQuantity(ticker: string, delta: number, price: number): boolean {
   const currentQuantity = portfolioState.stockQuantities.get(ticker) || 0
   const newQuantity = currentQuantity + delta
 
@@ -74,7 +74,7 @@ export function updateStockQuantity(ticker: string, delta: number, price: number
   return true
 }
 
-export function recalculateTotalValue(stocks: Stock[]): void {
+export function recalculateTotalValue(stocks: MockStock[]): void {
   let total = 0
   for (const [ticker, quantity] of portfolioState.stockQuantities) {
     const stock = stocks.find(s => s.ticker === ticker)
