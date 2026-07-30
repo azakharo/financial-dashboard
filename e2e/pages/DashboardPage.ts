@@ -25,7 +25,7 @@ export class DashboardPage {
     this.availableBalance = page.getByTestId('available-balance');
     this.dailyChange = page.getByTestId('daily-change');
     this.modal = page.getByRole('dialog');
-    this.quantityInput = page.getByLabel('Количество');
+    this.quantityInput = this.modal.getByLabel('Количество');
     this.submitButton = this.modal.getByRole('button', {name: 'Купить'});
     this.cancelButton = this.modal.getByRole('button', {name: 'Отмена'});
     this.state = {
@@ -117,7 +117,7 @@ export class DashboardPage {
       }
 
       const totalCost = stock.currentPrice * quantity;
-      
+
       if (totalCost > this.state.portfolio.availableBalance) {
         await route.fulfill({
           status: 400,

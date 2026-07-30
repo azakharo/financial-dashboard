@@ -7,25 +7,27 @@ import {
   formatQuantity,
 } from '@/shared/lib/format';
 
+const NBSP = '\u00A0';
+
 describe('formatPrice', () => {
   it('formats positive price correctly', () => {
-    expect(formatPrice(1234.56)).toBe('$1,234.56');
+    expect(formatPrice(1234.56)).toBe(`1${NBSP}234,56${NBSP}$`);
   });
 
   it('formats zero price', () => {
-    expect(formatPrice(0)).toBe('$0.00');
+    expect(formatPrice(0)).toBe(`0,00${NBSP}$`);
   });
 
   it('formats small price with 2 decimals', () => {
-    expect(formatPrice(0.1)).toBe('$0.10');
+    expect(formatPrice(0.1)).toBe(`0,10${NBSP}$`);
   });
 
   it('formats large price correctly', () => {
-    expect(formatPrice(1000000)).toBe('$1,000,000.00');
+    expect(formatPrice(1000000)).toBe(`1${NBSP}000${NBSP}000,00${NBSP}$`);
   });
 
   it('handles negative price', () => {
-    expect(formatPrice(-50.25)).toBe('-$50.25');
+    expect(formatPrice(-50.25)).toBe(`-50,25${NBSP}$`);
   });
 });
 
@@ -83,7 +85,7 @@ describe('formatLargeNumber', () => {
 
 describe('formatQuantity', () => {
   it('formats quantity with thousand separator', () => {
-    expect(formatQuantity(1000)).toBe('1,000');
+    expect(formatQuantity(1000)).toBe(`1${NBSP}000`);
   });
 
   it('formats small quantity', () => {
@@ -91,7 +93,7 @@ describe('formatQuantity', () => {
   });
 
   it('formats large quantity', () => {
-    expect(formatQuantity(1000000)).toBe('1,000,000');
+    expect(formatQuantity(1000000)).toBe(`1${NBSP}000${NBSP}000`);
   });
 
   it('handles zero', () => {
