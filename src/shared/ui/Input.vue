@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string | number">
 import {computed} from 'vue';
 
 import {cn} from '@/shared/lib';
@@ -7,22 +7,26 @@ const props = withDefaults(
   defineProps<{
     type?: string;
     class?: string;
-    modelValue?: string | number;
     placeholder?: string;
     disabled?: boolean;
+    id?: string;
+    min?: number | string;
+    max?: number | string;
   }>(),
   {
     type: 'text',
     class: undefined,
-    modelValue: '',
     placeholder: undefined,
     disabled: false,
+    id: undefined,
+    min: undefined,
+    max: undefined,
   },
 );
 
-const emit = defineEmits<{
-  'update:modelValue': [value: string];
-}>();
+const model = defineModel<T>({
+  default: '' as T,
+});
 
 const classes = computed(() =>
   cn(
@@ -49,17 +53,22 @@ const classes = computed(() =>
 
 function onInput(event: Event) {
   const target = event.target as HTMLInputElement;
-  emit('update:modelValue', target.value);
+  const value =
+    props.type === 'number' ? Number(target.value) || 0 : target.value;
+  model.value = value as T;
 }
 </script>
 
 <template>
   <input
+    :id="id"
     :type="type"
     :class="classes"
-    :value="modelValue"
+    :value="model"
     :placeholder="placeholder"
     :disabled="disabled"
+    :min="min"
+    :max="max"
     @input="onInput"
   />
 </template>

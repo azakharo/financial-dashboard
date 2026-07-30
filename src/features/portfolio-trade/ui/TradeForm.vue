@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {ref, computed} from 'vue';
+import {ref, computed, watch} from 'vue';
 
-import {Button} from '@/shared/ui';
+import {Button, Input} from '@/shared/ui';
 import {formatPrice} from '@/shared/lib/format';
 import type {Stock, TradeMode} from '@/shared/api';
 import {usePortfolio} from '@/entities/portfolio';
@@ -25,6 +25,10 @@ const emit = defineEmits<{
 
 const quantity = ref(1);
 const error = ref<string | undefined>();
+
+watch(quantity, () => {
+  error.value = undefined;
+});
 
 const {data: portfolio} = usePortfolio();
 const uiStore = useUIStore();
@@ -58,13 +62,6 @@ const validation = computed(() => {
 
   return validateSell(quantity.value, props.stock);
 });
-
-function handleQuantityChange(e: Event) {
-  const target = e.target as HTMLInputElement;
-  const value = parseInt(target.value, 10);
-  quantity.value = Number.isNaN(value) ? 0 : value;
-  error.value = undefined;
-}
 
 function handleSubmit(e: Event) {
   e.preventDefault();
@@ -111,15 +108,13 @@ function handleClose() {
 
     <div class="space-y-2">
       <label for="quantity" class="text-sm font-medium"> Количество </label>
-      <input
+      <Input
         id="quantity"
+        v-model="quantity"
         type="number"
         :min="1"
         :max="mode === 'sell' ? quantityInPortfolio : undefined"
-        :value="quantity"
         :disabled="isPending"
-        class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-        @input="handleQuantityChange"
       />
       <div v-if="mode === 'sell'" class="text-xs text-muted-foreground">
         Доступно для продажи: {{ quantityInPortfolio }}
